@@ -13,9 +13,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_margin="5dip"
+            android:layout_margin="8dp"
             android:background="@drawable/txtview"
-            android:paddingLeft="10dip"
             android:text="Beispieltext"
             android:textColor="@android:color/secondary_text_light" />
     </LinearLayout>
