@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
         });*/
         buttonSend = (Button) findViewById(R.id.send);
         listView = (ListView) findViewById(R.id.msgoverview);
-        chatArrayAdapter = new ChatArrayAdapter(getApplicationContext(), R.layout.right);
+        chatArrayAdapter = new ChatArrayAdapter(getApplicationContext(), R.layout.single_message);
         listView.setAdapter(chatArrayAdapter);
         chatText = (EditText) findViewById(R.id.msg);
         chatText.setOnKeyListener(new View.OnKeyListener() {
