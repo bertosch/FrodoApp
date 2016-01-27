@@ -64,17 +64,22 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onChanged() {
                     super.onChanged();
-                listView.setSelection(chatArrayAdapter.getCount() - 1);
+                    listView.setSelection(chatArrayAdapter.getCount() - 1);
                 }
-        });
+            });
+        chatArrayAdapter.add(new ChatMessage(true,
+                "Hallo, mein Name ist Frodo, dein Film- und Serienberater. Wie ist dein Name?"));
     }
     //KLasse ChatMessage aufrufen und Nachricht versenden
     private boolean sendChatMessage() {
-        chatArrayAdapter.add(new ChatMessage(side, chatText.getText().toString()));
+        String in = chatText.getText().toString();
+        chatArrayAdapter.add(new ChatMessage(side, in));
         chatText.setText("");
         side = !side;
+        chatArrayAdapter.add(new ChatMessage(true, Bot.generateReply(in)));
         return true;
     }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
