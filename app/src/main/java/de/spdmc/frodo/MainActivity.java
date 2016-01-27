@@ -8,6 +8,7 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.AbsListView;
 import android.widget.Button;
 import android.widget.EditText;
@@ -69,13 +70,15 @@ public class MainActivity extends AppCompatActivity {
             });
         chatArrayAdapter.add(new ChatMessage(true,
                 "Hallo, mein Name ist Frodo, dein Film- und Serienberater. Wie ist dein Name?"));
+        getWindow().setSoftInputMode(
+                WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN
+        );
     }
     //KLasse ChatMessage aufrufen und Nachricht versenden
     private boolean sendChatMessage() {
         String in = chatText.getText().toString();
-        chatArrayAdapter.add(new ChatMessage(side, in));
+        chatArrayAdapter.add(new ChatMessage(false, in));
         chatText.setText("");
-        side = !side;
         chatArrayAdapter.add(new ChatMessage(true, Bot.generateReply(in)));
         return true;
     }

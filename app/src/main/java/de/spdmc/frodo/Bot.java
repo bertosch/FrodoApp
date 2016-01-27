@@ -19,12 +19,12 @@ import de.spdmc.frodo.textparser.QueryParser;
 public class Bot {
 
     private static Enumerations.DialogState currentState = Enumerations.DialogState.PARSE_NAME;
+    private static Profile p = new Profile();
 
     public static String generateReply(String s) {
         String reply = null;
         Genres.fillGenres();
-        // initialisiere Bot und Profil
-        Profile p = new Profile();
+        // initialisiere Parser
         GreetingsParser greetingsParser = new GreetingsParser();
         QueryParser queryParser = new QueryParser();
         NameParser nameParser = new NameParser();
