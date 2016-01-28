@@ -18,9 +18,6 @@ import de.spdmc.frodo.textparser.NameParser;
 import de.spdmc.frodo.textparser.NameWithdrawParser;
 import de.spdmc.frodo.textparser.QueryParser;
 
-/**
- * Created by lars on 27.01.16.
- */
 public class Bot {
 
     private static String TAG = "Bot";
