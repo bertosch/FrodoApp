@@ -1,21 +1,17 @@
 package de.spdmc.frodo.profile;
 
-import android.content.res.XmlResourceParser;
-
-import android.util.Xml;
-
-import org.xmlpull.v1.XmlSerializer;
-
+import java.util.ArrayList;
 import java.util.List;
-import java.lang.Object.*;
-import java.io.*;
 
 public class Profile {
 
 
     public Profile()
     {
-        /**************************************/
+        favorite_movies = new ArrayList<String>();
+        favorite_series = new ArrayList<String>();
+        watched_movies = new ArrayList<String>();
+        watched_series = new ArrayList<String>();
     }
 
     //Properties
@@ -24,8 +20,8 @@ public class Profile {
     private  String favorite_type = null;
     private  String favorite_actor = null;
     private  String favorite_genre = null;
-    private  List<String> favortie_movies = null;
-    private  List<String> favortie_series = null;
+    private  List<String> favorite_movies = null;
+    private  List<String> favorite_series = null;
     private String favorite_genre_id = null;
 
     private  String last_watched = null;
@@ -34,6 +30,7 @@ public class Profile {
     private  List<String> watched_series = null;
 
     //getter, setter
+
     public  String getName() {
         return this.name;
     }
@@ -67,26 +64,26 @@ public class Profile {
     }
 
     public List<String> getFavorite_movies() {
-        return favortie_movies;
+        return favorite_movies;
     }
 
     public void addFavorite_movie(String mv) {
-        favortie_movies.add(mv);
+        favorite_movies.add(mv);
     }
 
     public List<String> getFavorite_series() {
-        return favortie_series;
+        return favorite_series;
     }
 
     public void addFavorite_serie(String serie) {
-        favortie_series.add(serie);
+        favorite_series.add(serie);
     }
 
     public List<String> getWatched_movies() {
         return watched_movies;
     }
 
-    public void addWachted_movie(String mv) {
+    public void addWatched_movie(String mv) {
         watched_movies.add(mv);
     }
 
@@ -107,68 +104,11 @@ public class Profile {
         this.last_watched = lw;
     }
 
-    public void read()
-    {
-        /*xpp = factory.newPullParser();
-        file = new File(getFilesDir()+"/Profile.xml");
-        fis = new FileInputStream(file);
-        xpp.setInput(new InputStreamReader(fis));
-        eventType = 0;
-        eventType = xpp.getEventType();
-        do
-        {
-            if (eventType == XmlResourceParser.START_TAG)
-            {
-                String strName = xpp.getName();
-                if (strName.equals("Shop"))
-                {
-                    String nameSh = xpp.getAttributeValue(null, "name");
-
-                }
-            }
-            eventType = xpp.next();
-        }
-        while (eventType != XmlResourceParser.END_DOCUMENT);*/
-    }
-
-    public String getFavorite_genre_id() {
+       public String getFavorite_genre_id() {
         return favorite_genre_id;
     }
 
     public void setFavorite_genre_id(String favorite_genre_id) {
         this.favorite_genre_id = favorite_genre_id;
     }
-
-    /*// Profil schreiben --> Pfad im Writer angeben
-    public void write()
-    {
-        ProfileWriter pw = new ProfileWriter();
-        try {
-            pw.write(this);
-        } catch (Exception e) {
-            System.out.print(e);
-        }
-    }
-
-    // Profil lesen --> Pfad im Reader angeben
-    public void read()
-    {
-        ProfileReader pr = new ProfileReader();
-
-        try {
-            //TODO Properties setzen
-            this.name =  pr.read().getName();
-            this.favorite_type = pr.read().getFavorite_type();
-            this.favortie_actor = pr.read().getFavorite_actor();
-            this.favortie_genre = pr.read().getFavorite_genre();
-            this.favortie_movies = pr.read().getFavorite_movies();
-            this.favortie_series = pr.read().getFavorite_series();
-            this.watched_movies = pr.read().getWatched_movies();
-            this.watched_series = pr.read().getWatched_series();
-            this.last_watched = pr.read().getLast_watched();
-
-        } catch (Exception e) {
-            // #########################
-        }
-    }*/
 }
