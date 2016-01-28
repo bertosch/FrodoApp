@@ -1,6 +1,14 @@
 package de.spdmc.frodo.profile;
 
+import android.content.res.XmlResourceParser;
+
+import android.util.Xml;
+
+import org.xmlpull.v1.XmlSerializer;
+
 import java.util.List;
+import java.lang.Object.*;
+import java.io.*;
 
 public class Profile {
 
@@ -16,9 +24,9 @@ public class Profile {
     private  String favorite_type = null;
     private  String favorite_actor = null;
     private  String favorite_genre = null;
-    private  int favorite_genre_id;
-    private  List<String> favorite_movies = null;
-    private  List<String> favorite_series = null;
+    private  List<String> favortie_movies = null;
+    private  List<String> favortie_series = null;
+    private String favorite_genre_id = null;
 
     private  String last_watched = null;
 
@@ -59,19 +67,19 @@ public class Profile {
     }
 
     public List<String> getFavorite_movies() {
-        return favorite_movies;
+        return favortie_movies;
     }
 
     public void addFavorite_movie(String mv) {
-        favorite_movies.add(mv);
+        favortie_movies.add(mv);
     }
 
     public List<String> getFavorite_series() {
-        return favorite_series;
+        return favortie_series;
     }
 
     public void addFavorite_serie(String serie) {
-        favorite_series.add(serie);
+        favortie_series.add(serie);
     }
 
     public List<String> getWatched_movies() {
@@ -99,15 +107,37 @@ public class Profile {
         this.last_watched = lw;
     }
 
-    public int getFavorite_genre_id() {
+    public void read()
+    {
+        /*xpp = factory.newPullParser();
+        file = new File(getFilesDir()+"/Profile.xml");
+        fis = new FileInputStream(file);
+        xpp.setInput(new InputStreamReader(fis));
+        eventType = 0;
+        eventType = xpp.getEventType();
+        do
+        {
+            if (eventType == XmlResourceParser.START_TAG)
+            {
+                String strName = xpp.getName();
+                if (strName.equals("Shop"))
+                {
+                    String nameSh = xpp.getAttributeValue(null, "name");
+
+                }
+            }
+            eventType = xpp.next();
+        }
+        while (eventType != XmlResourceParser.END_DOCUMENT);*/
+    }
+
+    public String getFavorite_genre_id() {
         return favorite_genre_id;
     }
 
-    public void setFavorite_genre_id(int favorite_genre_id) {
+    public void setFavorite_genre_id(String favorite_genre_id) {
         this.favorite_genre_id = favorite_genre_id;
     }
-
-
 
     /*// Profil schreiben --> Pfad im Writer angeben
     public void write()
@@ -129,10 +159,10 @@ public class Profile {
             //TODO Properties setzen
             this.name =  pr.read().getName();
             this.favorite_type = pr.read().getFavorite_type();
-            this.favorite_actor = pr.read().getFavorite_actor();
-            this.favorite_genre = pr.read().getFavorite_genre();
-            this.favorite_movies = pr.read().getFavorite_movies();
-            this.favorite_series = pr.read().getFavorite_series();
+            this.favortie_actor = pr.read().getFavorite_actor();
+            this.favortie_genre = pr.read().getFavorite_genre();
+            this.favortie_movies = pr.read().getFavorite_movies();
+            this.favortie_series = pr.read().getFavorite_series();
             this.watched_movies = pr.read().getWatched_movies();
             this.watched_series = pr.read().getWatched_series();
             this.last_watched = pr.read().getLast_watched();
