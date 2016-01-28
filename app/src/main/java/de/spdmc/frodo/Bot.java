@@ -23,11 +23,21 @@ import de.spdmc.frodo.textparser.QueryParser;
  */
 public class Bot {
 
+    private static String TAG = "Bot";
     private static Context context;
     private static Enumerations.DialogState currentState = Enumerations.DialogState.PARSE_NAME;
     private static Profile p = new Profile();
     private static ProfileReader reader = new ProfileReader();
     private static ProfileWriter writer = new ProfileWriter();
+
+    public static void readSavedProfile(){
+        try {
+            p = reader.read();
+        } catch (Exception e) {
+            Log.e(TAG,"Noch kein gespeichertes Profil vorhanden");
+            e.printStackTrace();
+        }
+    }
 
     public static String generateReply(String s) {
         String reply = null;
@@ -102,12 +112,6 @@ public class Bot {
                     p.setName(ic.getData().get(0));
                     try {
                         writer.write(p);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    try {
-                        Profile test = reader.read();
-                        Log.d("DEBUG, Name:", test.getName());
                     } catch (Exception e) {
                         e.printStackTrace();
                     }

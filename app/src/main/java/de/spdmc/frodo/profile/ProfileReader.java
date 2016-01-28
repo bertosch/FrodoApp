@@ -1,6 +1,8 @@
 package de.spdmc.frodo.profile;
 
 //import java.beans.XMLDecoder;
+import android.os.Environment;
+
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
@@ -35,25 +37,30 @@ public class ProfileReader {
             } else if(eventType == XmlPullParser.END_DOCUMENT) {
                 //################
             } else if(eventType == XmlPullParser.START_TAG) {
-                if(xpp.getName() == "name")
+                if(xpp.getName().equals("name"))
                 {
-                        profile.setName(xpp.nextText());
+                    String s = xpp.nextText();
+                    if(!s.equals("")) profile.setName(s);
                 }
-                else if(xpp.getName() == "favorite_type")
+                else if(xpp.getName().equals("favorite_type"))
                 {
-                    profile.setFavorite_type(xpp.nextText());
+                    String s = xpp.nextText();
+                    if(!s.equals("")) profile.setFavorite_type(s);
                 }
-                else if(xpp.getName() == "favorite_actor")
+                else if(xpp.getName().equals("favorite_actor"))
                 {
-                    profile.setFavorite_actor(xpp.nextText());
+                    String s = xpp.nextText();
+                    if(!s.equals("")) profile.setFavorite_actor(s);
                 }
-                else if(xpp.getName() == "favorite_genre")
+                else if(xpp.getName().equals("favorite_genre"))
                 {
-                    profile.setFavorite_genre(xpp.nextText());
+                    String s = xpp.nextText();
+                    if(!s.equals("")) profile.setFavorite_genre(s);
                 }
-                else if(xpp.getName() == "last_watched")
+                else if(xpp.getName().equals("last_watched"))
                 {
-                    profile.setLast_watched(xpp.nextText());
+                    String s = xpp.nextText();
+                    if(!s.equals("")) profile.setLast_watched(s);
                 }
 
                 //TODO Listen
