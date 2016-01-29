@@ -34,7 +34,7 @@ public abstract class Parser {
     }
 
     protected String normalize(String s) {
-        String normalizedStr = s.replaceAll("[^a-zA-Z 0-9]", "");
+        String normalizedStr = s.replaceAll("[^a-zA-Z 0-9 äöüß]", "");
         normalizedStr = normalizedStr.toLowerCase();
         return normalizedStr;
     }

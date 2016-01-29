@@ -22,7 +22,7 @@ public class GreetingsParser extends Parser {
         String[] inArr = in.split(" ");
         for (String s1 : this.getPattern()) {
             for (String s2 : inArr) {
-                if (s2.contains(s1)) ic.setDialogState(Enumerations.DialogState.PARSE_NAME);
+                if (s2.contains(s1)) ic.setDialogState(Enumerations.DialogState.GREETING_REPLY);
             }
         }
         return ic;

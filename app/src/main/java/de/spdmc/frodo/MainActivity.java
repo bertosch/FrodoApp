@@ -17,6 +17,8 @@ import android.widget.ListView;
 
 import java.util.logging.Logger;
 
+import de.spdmc.frodo.data.Genres;
+
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "ChatActivity";
     //Methoden für die Views/Button
@@ -34,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         Bot.setContext(this.getApplicationContext());
         Bot.readSavedProfile();
+        Genres.fillGenres();
 
         /*FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {

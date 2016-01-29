@@ -21,8 +21,12 @@ public class NameParser extends Parser {
         InputContent ic = new InputContent();
         String[] inArr = in.split(" ");
         GreetingsParser gp = new GreetingsParser();
-        if (inArr[0].equals("nein")) {
+        if ((inArr[0].equals("nein") || in.contains("nicht")) && answerQuestion) {
             ic.setDialogState(Enumerations.DialogState.NAME_DECLINED);
+            return ic;
+        } else if(inArr[0].equals("ja") && answerQuestion){
+            ic.setDialogState(Enumerations.DialogState.NAME_REASK2);
+            return ic;
         } else if ((inArr.length == 1 || inArr.length == 2) && answerQuestion) {
             for(String s : gp.getPattern()){
                 if(in.startsWith(s)) {
@@ -46,12 +50,14 @@ public class NameParser extends Parser {
                                 ic.setDialogState(Enumerations.DialogState.NAME_REPLY);
                                 String h = Character.toUpperCase(inArr[i + 1].charAt(0)) + inArr[i + 1].substring(1);
                                 ic.addData(h);
+                                return ic;
                             }
                         } else if (s2.contains(this.pattern[2])) {
                             if (inArr.length >= i + 3) {
                                 ic.setDialogState(Enumerations.DialogState.NAME_REPLY);
                                 String h = Character.toUpperCase(inArr[i + 2].charAt(0)) + inArr[i + 2].substring(1);
                                 ic.addData(h);
+                                return ic;
                             }
                         }
                     }

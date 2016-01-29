@@ -27,7 +27,6 @@ public class FavoriteTypeParser extends Parser {
                 }
             }
         }
-        if(ic.getDialogState() == null) ic.setDialogState(Enumerations.DialogState.FAVORITE_TYPE_FAULT_REPLY);
         return ic;
     }
 

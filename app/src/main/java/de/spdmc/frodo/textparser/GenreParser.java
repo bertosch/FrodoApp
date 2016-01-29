@@ -10,7 +10,7 @@ public class GenreParser extends Parser {
 
     public GenreParser() {
         super();
-        this.pattern = new String[]{"genre", "mag", "schaue"};
+        //this.pattern = new String[]{"genre", "mag", "schaue"};
     }
 
     public GenreParser(String[] pattern) {
@@ -19,6 +19,11 @@ public class GenreParser extends Parser {
 
     @Override
     public InputContent parse(String in) {
+        return parse(in, false);
+    }
+
+    @Override
+    public InputContent parse(String in, boolean answerQuestion) {
         in = normalize(in);
         InputContent ic = new InputContent();
         String[] inArr = in.split(" ");
@@ -68,6 +73,12 @@ public class GenreParser extends Parser {
                 }
             }
         }*/
+        if(inArr.length >= 1 && answerQuestion){
+            if(inArr[0].equals("nein")){
+                ic.setDialogState(Enumerations.DialogState.GENRE_DECLINED);
+                return ic;
+            }
+        }
         for(int j = 0; j < inArr.length; j++) {
             String s = inArr[j];
             for (int i = 0; i < Genres.genres.length; i++) {
@@ -79,7 +90,13 @@ public class GenreParser extends Parser {
                 }
             }
         }
-        if(ic.getDialogState() == null) ic.setDialogState(Enumerations.DialogState.GENRE_FAULT_REPLY);
+        if(ic.getData().isEmpty() && answerQuestion){
+            if(inArr.length >= 1){
+                if(inArr[0].equals("ja")){
+                    ic.setDialogState(Enumerations.DialogState.GENRE_REASK);
+                }
+            }
+        }
         return ic;
     }
 
