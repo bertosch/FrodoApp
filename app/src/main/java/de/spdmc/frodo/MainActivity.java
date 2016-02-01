@@ -1,7 +1,12 @@
 package de.spdmc.frodo;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.DataSetObserver;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -9,7 +14,6 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.AbsListView;
 import android.widget.Button;
 import android.widget.EditText;
@@ -27,6 +31,8 @@ public class MainActivity extends AppCompatActivity {
     private EditText chatText;
     private Button buttonSend;
     private boolean side = false;
+    private ResponseReceiver receiver;
+    private ChatMessage thinkingMessage = new ChatMessage(true, "Frodo denkt nach...");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +52,7 @@ public class MainActivity extends AppCompatActivity {
                         .setAction("Action", null).show();
             }
         });*/
+
         buttonSend = (Button) findViewById(R.id.send);
         listView = (ListView) findViewById(R.id.msgoverview);
         chatArrayAdapter = new ChatArrayAdapter(getApplicationContext(), R.layout.single_message);
@@ -59,6 +66,7 @@ public class MainActivity extends AppCompatActivity {
                 return false;
             }
         });
+
         //Send Button für Versand scharf machen
         buttonSend.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -66,28 +74,36 @@ public class MainActivity extends AppCompatActivity {
                 sendChatMessage();
             }
         });
+
         //zum Ende scrollen, wenn neue Nachrichten kommen
         listView.setTranscriptMode(AbsListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
-            listView.setAdapter(chatArrayAdapter);
-            chatArrayAdapter.registerDataSetObserver(new DataSetObserver() {
-                @Override
-                public void onChanged() {
-                    super.onChanged();
-                    listView.setSelection(chatArrayAdapter.getCount() - 1);
-                }
-            });
+        listView.setAdapter(chatArrayAdapter);
+        chatArrayAdapter.registerDataSetObserver(new DataSetObserver() {
+            @Override
+            public void onChanged() {
+                super.onChanged();
+                listView.setSelection(chatArrayAdapter.getCount() - 1);
+            }
+        });
+
         chatArrayAdapter.add(new ChatMessage(true,
                 "Hallo, mein Name ist Frodo, dein Film- und Serienberater. Wie ist dein Name?"));
-        getWindow().setSoftInputMode(
-                WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN
-        );
     }
+
     //KLasse ChatMessage aufrufen und Nachricht versenden
     private boolean sendChatMessage() {
         String in = chatText.getText().toString();
         chatArrayAdapter.add(new ChatMessage(false, in));
         chatText.setText("");
-        chatArrayAdapter.add(new ChatMessage(true, Bot.generateReply(in)));
+
+        chatArrayAdapter.add(thinkingMessage);
+        //Intent Service
+        Intent frodoIntent = new Intent(MainActivity.this, BotService.class);
+        frodoIntent.setAction(BotService.ACTION_QUESTION);
+        frodoIntent.putExtra(BotService.EXTRA_QUESTION, in);
+        startService(frodoIntent);
+        //ALT
+        //chatArrayAdapter.add(new ChatMessage(true, Bot.generateReply(in)));
         return true;
     }
 
@@ -112,4 +128,23 @@ public class MainActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        IntentFilter intentFilter = new IntentFilter(IntentActions.BROADCAST_ACTION_BOT_ANSWER);
+        receiver = new ResponseReceiver();
+        LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(this);
+        localBroadcastManager.registerReceiver(receiver, intentFilter);
+    }
+
+    public class ResponseReceiver extends BroadcastReceiver{
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            chatArrayAdapter.remove(thinkingMessage);
+            chatArrayAdapter.add(new ChatMessage(true, intent.getExtras().getString(IntentActions.EXTRA_BOT_ANSWER)));
+        }
+    }
+
 }

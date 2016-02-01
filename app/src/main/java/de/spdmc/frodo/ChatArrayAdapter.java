@@ -57,4 +57,9 @@ class ChatArrayAdapter extends ArrayAdapter<ChatMessage> {
         singleMessage.setGravity(chatMessageObj.left ? Gravity.LEFT : Gravity.RIGHT);
         return row;
     }
+
+    @Override
+    public void remove(ChatMessage object) {
+        chatMessageList.remove(object);
+    }
 }
