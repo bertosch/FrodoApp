@@ -36,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         Bot.setContext(this.getApplicationContext());
@@ -53,7 +54,6 @@ public class MainActivity extends AppCompatActivity {
 
         buttonSend = (Button) findViewById(R.id.send);
         listView = (ListView) findViewById(R.id.msgoverview);
-        chatArrayAdapter = new ChatArrayAdapter(getApplicationContext(), R.layout.single_message);
         listView.setAdapter(chatArrayAdapter);
         chatText = (EditText) findViewById(R.id.msg);
         chatText.setOnKeyListener(new View.OnKeyListener() {
@@ -139,8 +139,9 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         IntentFilter intentFilter = new IntentFilter(IntentActions.BROADCAST_ACTION_BOT_ANSWER);
         receiver = new ResponseReceiver();
-        LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(this);
-        localBroadcastManager.registerReceiver(receiver, intentFilter);
+        LocalBroadcastManager.getInstance(this).registerReceiver(
+                receiver, intentFilter);
+
     }
 
     private class ResponseReceiver extends BroadcastReceiver{
