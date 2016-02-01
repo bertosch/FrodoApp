@@ -4,7 +4,6 @@ import android.app.IntentService;
 import android.app.Service;
 import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
-import android.util.Log;
 
 
 /**
@@ -18,6 +17,7 @@ public class BotService extends IntentService {
     public static final String EXTRA_QUESTION = "de.spdmc.frodo.BotService.EXTRA_QUESTION";
 
     public BotService(){
+
         super("BotService");
     }
 
@@ -27,12 +27,14 @@ public class BotService extends IntentService {
      * @param name Used to name the worker thread, important only for debugging.
      */
     public BotService(String name) {
+
         super(name);
     }
 
 
     @Override
     public void onCreate() {
+
         super.onCreate();
     }
 
@@ -60,6 +62,7 @@ public class BotService extends IntentService {
 
     @Override
     public void onDestroy() {
+
         super.onDestroy();
     }
 
@@ -83,7 +86,7 @@ public class BotService extends IntentService {
                         new Intent(IntentActions.BROADCAST_ACTION_BOT_ANSWER)
                                 // Answer into Intent
                                 .putExtra(IntentActions.EXTRA_BOT_ANSWER, answer);
-                //
+
                 // Broadcast of Intent to Receiver in-app
                 LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(this);
                 localBroadcastManager.sendBroadcast(localIntent);
