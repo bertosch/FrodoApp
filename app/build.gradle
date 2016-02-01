@@ -21,6 +21,8 @@ android {
         exclude 'META-INF/NOTICE' // will not include NOTICE file
         exclude 'META-INF/LICENSE' // will not include LICENSE file
     }
+
+    useLibrary 'org.apache.http.legacy'
 }
 
     dependencies {
@@ -29,4 +31,5 @@ android {
     compile 'com.android.support:appcompat-v7:23.1.1'
     compile 'com.android.support:design:23.1.1'
     compile group: 'com.omertron', name: 'themoviedbapi', version:'4.1'
+        compile group: 'org.apache.httpcomponents' , name: 'httpclient-android' , version: '4.3.5.1'
 }

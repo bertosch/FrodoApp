@@ -5,7 +5,6 @@ import android.util.Log;
 
 import java.util.Random;
 
-import de.spdmc.frodo.data.Genres;
 import de.spdmc.frodo.enumerations.Enumerations;
 import de.spdmc.frodo.profile.Profile;
 import de.spdmc.frodo.profile.ProfileReader;
@@ -114,6 +113,7 @@ public class Bot {
                     if (ic.getDialogState() == null) ic = recommendationParser.parse(s);
                     currentState = ic.getDialogState();
                     // TODO andere Parser laufen lassen
+                    if(currentState == null) currentState = Enumerations.DialogState.FAVORITE_ACTOR_REASK;
                     break;
                 case GREETING_REPLY:
                     reply = speakRandomlyAppend(greetingsParser.getPattern(), ", wie ist dein Name?");
