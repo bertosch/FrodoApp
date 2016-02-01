@@ -17,4 +17,8 @@ public final class IntentActions {
         public static final String EXTRA_BOT_ANSWER =
                 "de.spdmc.frodo.EXTRA_BOT_ANSWER";
 
+        //status Bot fully loaded/loading
+        public static final int STATUS_BOT_LOADING = -1;
+        public static final int STATUS_BOT_FULLY_LOADED = 1;
+
 }
