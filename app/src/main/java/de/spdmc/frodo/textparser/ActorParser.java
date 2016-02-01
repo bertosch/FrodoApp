@@ -66,22 +66,18 @@ public class ActorParser extends Parser {
         } else {
             //TODO
         }
+
+        //nur testweise
         if(ic.getData().size() > 0) {
-            Thread t = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    HttpClient httpClient = new SimpleHttpClientBuilder().build();
-                    HttpTools httpTools = new HttpTools(httpClient);
-                    TmdbSearch instance = new TmdbSearch("ccea4a6c65c6edba1535e8e8014b0e77", httpTools);
-                    try {
-                        ResultList<PersonFind> result = instance.searchPeople("will smith", 1, false, null);
-                        Log.d("ActorParser", result.toString());
-                    } catch (MovieDbException e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
-            t.run();
+            HttpClient httpClient = new SimpleHttpClientBuilder().build();
+            HttpTools httpTools = new HttpTools(httpClient);
+            TmdbSearch instance = new TmdbSearch("ccea4a6c65c6edba1535e8e8014b0e77", httpTools);
+            try {
+                ResultList<PersonFind> result = instance.searchPeople(ic.getData().get(0), 0, false, null);
+                Log.d("ActorParser", result.toString());
+            } catch (MovieDbException e) {
+                e.printStackTrace();
+            }
         }
         return ic;
     }
