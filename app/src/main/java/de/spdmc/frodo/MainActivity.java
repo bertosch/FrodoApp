@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -18,8 +17,7 @@ import android.widget.AbsListView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
-
-import java.util.logging.Logger;
+import android.widget.Toast;
 
 import de.spdmc.frodo.data.Genres;
 
@@ -130,6 +128,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onPause() {
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver);
+
+        super.onPause();
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
         IntentFilter intentFilter = new IntentFilter(IntentActions.BROADCAST_ACTION_BOT_ANSWER);
@@ -138,12 +143,27 @@ public class MainActivity extends AppCompatActivity {
         localBroadcastManager.registerReceiver(receiver, intentFilter);
     }
 
-    public class ResponseReceiver extends BroadcastReceiver{
+    private class ResponseReceiver extends BroadcastReceiver{
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            chatArrayAdapter.remove(thinkingMessage);
-            chatArrayAdapter.add(new ChatMessage(true, intent.getExtras().getString(IntentActions.EXTRA_BOT_ANSWER)));
+            //nur zum gucken ob was passiert oder nicht. kann wieder raus später
+            if (intent.getAction().equalsIgnoreCase(IntentActions.BROADCAST_ACTION_BOT_STATUS)) {
+                int extraMsg = intent.getIntExtra(IntentActions.EXTRA_BOT_STATUS, 0);
+                switch (extraMsg){
+                    case IntentActions.STATUS_BOT_LOADING:
+                        Toast.makeText(MainActivity.this, "Frodo wird geladen", Toast.LENGTH_SHORT).show();
+                        break;
+
+                    case IntentActions.STATUS_BOT_FULLY_LOADED:
+                        Toast.makeText(MainActivity.this, "Frodo geladen", Toast.LENGTH_SHORT).show();
+                        break;
+                }
+            }
+            if (intent.getAction().equalsIgnoreCase(IntentActions.BROADCAST_ACTION_BOT_ANSWER)){
+                chatArrayAdapter.remove(thinkingMessage);
+                chatArrayAdapter.add(new ChatMessage(true, intent.getExtras().getString(IntentActions.EXTRA_BOT_ANSWER)));
+            }
         }
     }
 
