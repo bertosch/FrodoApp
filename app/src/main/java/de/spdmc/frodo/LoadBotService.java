@@ -13,9 +13,6 @@ public class LoadBotService extends IntentService {
     }
     @Override
     protected void onHandleIntent(Intent workIntent) {
-        //TODO
-        //Wuerde den Bot gern hier initial aufrufen! Lars kannst du das möglich machen?
-        //Bot.setup(this);
 
         Intent localIntent =
                 new Intent(IntentActions.BROADCAST_ACTION_BOT_STATUS)
