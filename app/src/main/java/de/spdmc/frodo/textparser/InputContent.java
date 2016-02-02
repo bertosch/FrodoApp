@@ -12,7 +12,7 @@ public class InputContent {
 
     public InputContent() {
         setDialogState(null);
-        data = new ArrayList<String>();
+        data = new ArrayList<>();
     }
 
     public InputContent(Enumerations.DialogState at, ArrayList<String> data) {
@@ -22,7 +22,7 @@ public class InputContent {
 
     public InputContent(Enumerations.DialogState at, String[] dataArr) {
         this.setDialogState(at);
-        this.data = new ArrayList<String>(Arrays.asList(dataArr));
+        this.data = new ArrayList<>(Arrays.asList(dataArr));
     }
 
     public ArrayList<String> getData() {
@@ -35,6 +35,14 @@ public class InputContent {
 
     public void addData(String s) {
         this.data.add(s);
+    }
+
+    public void removeData(String s){
+        this.data.remove(s);
+    }
+
+    public void removeData(int pos){
+        this.data.remove(pos);
     }
 
     public Enumerations.DialogState getDialogState() {
