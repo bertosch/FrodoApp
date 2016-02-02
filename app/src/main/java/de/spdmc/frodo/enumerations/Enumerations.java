@@ -25,7 +25,12 @@ public class Enumerations {
         FAVORITE_ACTOR_REPLY,
         RECOMMEND,
         GENRE_DECLINED,
-        GENRE_REASK;
+        GENRE_REASK,
+        FAVORITE_MOVIES_REASK,
+        FAVORITE_MOVIES_DECLINED,
+        FAVORITE_MOVIES_ASK_MORE,
+        FAVORITE_ACTOR_FAULT_REPLY,
+        PARSE_FAVORITE_MOVIE
     }
 
 }
