@@ -141,7 +141,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         // registriere den ResponseReceiver, so dass er auf BROADCAST_ACTION_BOT_ANSWER anspringt
-        IntentFilter intentFilter = new IntentFilter(IntentActions.BROADCAST_ACTION_BOT_ANSWER);
+        IntentFilter intentFilter = new IntentFilter(
+                IntentActions.BROADCAST_ACTION_BOT_ANSWER);
+                intentFilter.addAction(IntentActions.BROADCAST_ACTION_BOT_STATUS);
         receiver = new ResponseReceiver();
         LocalBroadcastManager.getInstance(this).registerReceiver(
                 receiver, intentFilter);
