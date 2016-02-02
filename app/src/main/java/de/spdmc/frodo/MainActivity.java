@@ -54,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
 
         buttonSend = (Button) findViewById(R.id.send);
         listView = (ListView) findViewById(R.id.msgoverview);
+        chatArrayAdapter = new ChatArrayAdapter(getApplicationContext(), R.layout.single_message);
         listView.setAdapter(chatArrayAdapter);
         chatText = (EditText) findViewById(R.id.msg);
         chatText.setOnKeyListener(new View.OnKeyListener() {
@@ -69,7 +70,9 @@ public class MainActivity extends AppCompatActivity {
         buttonSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
-                sendChatMessage();
+                // nur senden wenn Texteingabe nicht leer
+                if(!chatText.getText().toString().equals("")) sendChatMessage();
+                else Toast.makeText(getApplicationContext(), "Nachricht darf nicht leer sein!", Toast.LENGTH_SHORT).show();
             }
         });
 
