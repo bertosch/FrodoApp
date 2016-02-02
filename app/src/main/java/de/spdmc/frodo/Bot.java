@@ -3,6 +3,12 @@ package de.spdmc.frodo;
 import android.content.Context;
 import android.util.Log;
 
+import com.omertron.themoviedbapi.methods.TmdbSearch;
+import com.omertron.themoviedbapi.tools.HttpTools;
+
+import org.apache.http.client.HttpClient;
+import org.yamj.api.common.http.SimpleHttpClientBuilder;
+
 import java.util.Random;
 
 import de.spdmc.frodo.enumerations.Enumerations;
@@ -14,12 +20,18 @@ import de.spdmc.frodo.textparser.FavoriteTypeParser;
 import de.spdmc.frodo.textparser.GenreParser;
 import de.spdmc.frodo.textparser.GreetingsParser;
 import de.spdmc.frodo.textparser.InputContent;
+import de.spdmc.frodo.textparser.MoviesParser;
 import de.spdmc.frodo.textparser.NameParser;
 import de.spdmc.frodo.textparser.NameWithdrawParser;
 import de.spdmc.frodo.textparser.QueryParser;
 import de.spdmc.frodo.textparser.RecommendationParser;
 
 public class Bot {
+
+    //API Tools
+    private static HttpClient httpClient = new SimpleHttpClientBuilder().build();
+    private static HttpTools httpTools = new HttpTools(httpClient);
+    public static TmdbSearch tmdbSearch = new TmdbSearch("ccea4a6c65c6edba1535e8e8014b0e77", httpTools);
 
     private static String TAG = "Bot";
     private static Context context;
@@ -56,6 +68,7 @@ public class Bot {
         GenreParser genreParser = new GenreParser();
         ActorParser actorParser = new ActorParser();
         RecommendationParser recommendationParser = new RecommendationParser();
+        MoviesParser moviesParser = new MoviesParser();
 
         InputContent ic = new InputContent(); // InputContent der mit jeweiligem geparsten Inhalt gefuellt wird
 
@@ -113,7 +126,14 @@ public class Bot {
                     if (ic.getDialogState() == null) ic = recommendationParser.parse(s);
                     currentState = ic.getDialogState();
                     // TODO andere Parser laufen lassen
-                    if(currentState == null) currentState = Enumerations.DialogState.FAVORITE_ACTOR_REASK;
+                    if(currentState == null) currentState = Enumerations.DialogState.FAVORITE_ACTOR_FAULT_REPLY;
+                    break;
+                case PARSE_FAVORITE_MOVIE:
+                    ic = moviesParser.parse(s);
+                    if (ic.getDialogState() == null) ic = recommendationParser.parse(s);
+                    currentState = ic.getDialogState();
+                    // TODO andere Parser laufen lassen
+                    if(currentState == null) currentState = Enumerations.DialogState.FAVORITE_MOVIES_REASK;
                     break;
                 case GREETING_REPLY:
                     reply = speakRandomlyAppend(greetingsParser.getPattern(), ", wie ist dein Name?");
@@ -123,7 +143,7 @@ public class Bot {
                     for (String q : ic.getData()) {
                         reply = "starting query for " + q;
                     }
-                    // TODO neuen currentState setzen
+                    // TODO neuen currentState setzeminemen
                     break;
                 case NAME_REPLY:
                     reply = "Freut mich dich kennenzulernen, "
@@ -176,16 +196,37 @@ public class Bot {
                     currentState = Enumerations.DialogState.PARSE_FAVORITE_TYPE;
                     break;
                 case FAVORITE_ACTOR_REASK:
-                    reply = "Schön, magst du mir den Namen verraten?";
+                    reply = "Magst du mir den Namen verraten?";
                     currentState = Enumerations.DialogState.PARSE_FAVORITE_ACTOR;
                     break;
                 case FAVORITE_ACTOR_DECLINED:
-                    reply = "Okay, [ASK NEXT QUESTION]";
-                    //TODO next State
+                    if(p.getFavorite_type().equals("film")){
+                        reply = "Okay, Hast du einen Lieblingsfilm?";
+                        currentState = Enumerations.DialogState.PARSE_FAVORITE_MOVIE;
+                    }
+                    else {
+                        reply = "Okay, [ASK NEXT QUESTION]";
+                        //TODO parse serie
+                    }
                     break;
                 case FAVORITE_ACTOR_REPLY:
-                    reply = "Okay, du magst also " + ic.getData().get(0) + ". [ASK NEXT QUESTION]";
-                    // TODO next State
+                    reply = "Okay, du magst also " + ic.getData().get(0) + ".";
+                    p.setFavorite_actor(ic.getData().get(0));
+                    p.setFavorite_actor_id(ic.getData().get(1));
+                    Log.d(TAG, p.getFavorite_actor() + ", " + p.getFavorite_actor_id());
+                    writeProfile();
+                    if(p.getFavorite_type().equals("film")){
+                        reply += " Hast du einen Lieblingsfilm?";
+                        currentState = Enumerations.DialogState.PARSE_FAVORITE_MOVIE;
+                    }
+                    else {
+                        reply += " [ASK NEXT QUESTION]";
+                        //TODO parse serie
+                    }
+                    break;
+                case FAVORITE_ACTOR_FAULT_REPLY:
+                    reply = "Den kenne ich leider nicht, Hast du einen Lieblingsschauspieler?";
+                    currentState = Enumerations.DialogState.PARSE_FAVORITE_ACTOR;
                     break;
                 case RECOMMEND:
                     reply = "Suche passende Filme / Serien"; // Dummy
@@ -197,8 +238,23 @@ public class Bot {
                     currentState = Enumerations.DialogState.PARSE_FAVORITE_ACTOR;
                     break;
                 case GENRE_REASK:
-                    reply = "Schön, wie lautet dein Lieblingsgenre?";
+                    reply = "Wie lautet dein Lieblingsgenre?";
                     currentState = Enumerations.DialogState.PARSE_GENRE;
+                    break;
+                case FAVORITE_MOVIES_REASK:
+                    reply = "Wie lautet dein Lieblingsfilm?";
+                    currentState = Enumerations.DialogState.PARSE_FAVORITE_MOVIE;
+                    break;
+                case FAVORITE_MOVIES_DECLINED:
+                    reply = "Okay. [ASK NEXT QUESTION]";
+                    // TODO neuen currentState setzen
+                    break;
+                case FAVORITE_MOVIES_ASK_MORE:
+                    reply = "Hast du noch weitere Lieblingsfilme?";
+                    p.addFavorite_movie(ic.getData().get(0));
+                    writeProfile();
+                    Log.d(TAG, ic.getData().get(0) + ", " + ic.getData().get(1));
+                    currentState = Enumerations.DialogState.PARSE_FAVORITE_MOVIE;
                     break;
                 default:
                     reply = "Das habe ich leider nicht richtig verstanden.";
