@@ -137,6 +137,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        // registriere den ResponseReceiver, so dass er auf BROADCAST_ACTION_BOT_ANSWER anspringt
         IntentFilter intentFilter = new IntentFilter(IntentActions.BROADCAST_ACTION_BOT_ANSWER);
         receiver = new ResponseReceiver();
         LocalBroadcastManager.getInstance(this).registerReceiver(
@@ -144,11 +145,14 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+
+    // Empfaenger fuer Broadcast aus dem Service
     private class ResponseReceiver extends BroadcastReceiver{
 
         @Override
         public void onReceive(Context context, Intent intent) {
             //nur zum gucken ob was passiert oder nicht. kann wieder raus später
+            //wird nur funktionieren wenn in der onResume BROADCAST_ACTION_BOT_STATUS auch dem intentFilter hinzugefuegt wird (Lars)
             if (intent.getAction().equalsIgnoreCase(IntentActions.BROADCAST_ACTION_BOT_STATUS)) {
                 int extraMsg = intent.getIntExtra(IntentActions.EXTRA_BOT_STATUS, 0);
                 switch (extraMsg){
