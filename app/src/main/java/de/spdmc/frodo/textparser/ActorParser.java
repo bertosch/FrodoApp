@@ -1,26 +1,16 @@
 package de.spdmc.frodo.textparser;
 
-import android.util.Log;
-
 import com.omertron.themoviedbapi.MovieDbException;
-import com.omertron.themoviedbapi.methods.TmdbSearch;
 import com.omertron.themoviedbapi.model.person.PersonFind;
 import com.omertron.themoviedbapi.results.ResultList;
-import com.omertron.themoviedbapi.tools.HttpTools;
 
-import org.apache.http.client.HttpClient;
-import org.yamj.api.common.http.SimpleHttpClientBuilder;
-
+import de.spdmc.frodo.Bot;
 import de.spdmc.frodo.enumerations.Enumerations;
 
-/**
- * Created by lars on 28.01.16.
- */
 public class ActorParser extends Parser {
 
     public ActorParser(){
         super();
-        this.pattern = new String[]{"schauspieler", "mag"};
     }
 
     @Override
@@ -36,49 +26,46 @@ public class ActorParser extends Parser {
             else if(inArr[0].equals("nein")){
                 ic.setDialogState(Enumerations.DialogState.FAVORITE_ACTOR_DECLINED);
                 return ic;
-            } else {
-                ic.addData(inArr[0]);
-                ic.setDialogState(Enumerations.DialogState.FAVORITE_ACTOR_REPLY);
             }
         }
-        else if(inArr.length <= 4){ // nur evtl. ja + [NAME]
-            if(!inArr[0].equals("nein")){
-                if (inArr[0].equals("ja")){
-                    String name = "";
-                    for(int i = 1; i < inArr.length; i++){
-                        name += " " + inArr[i];
-                    }
-                    name = name.replaceFirst(" ", "");
-                    ic.addData(name);
+        try {
+            String s = inArr[inArr.length-1];
+            for (int i = inArr.length-1; (i >= inArr.length-3) && (i >= 0); i--){
+                ResultList<PersonFind> result = Bot.tmdbSearch.searchPeople(s, 0, false, null);
+                if(result.isEmpty()){
+                    if(i > 0) s = inArr[i-1] + " " + s;
+                } else if (!normalize(result.getResults().get(0).getName())
+                        .equals(s)){ // erstes suchresultat matched suchname nicht
+                    if(i > 0) s = inArr[i-1] + " " + s;
+                } else {
+                    ic.addData(result.getResults().get(0).getName());
+                    ic.addData(String.valueOf(result.getResults().get(0).getId()));
+                    ic.setDialogState(Enumerations.DialogState.FAVORITE_ACTOR_REPLY);
+                    return ic;
                 }
-                else {
-                    String help = "";
-                    for (String s : inArr) {
-                        help += " " + s;
+            }
+            if(ic.getData().isEmpty()){
+                s = inArr[0];
+                for (int i = 0; (i <= 1) && (i < inArr.length-1); i++){
+                    ResultList<PersonFind> result = Bot.tmdbSearch.searchPeople(s, 0, false, null);
+                    if(result.isEmpty()){
+                        s += " " + inArr[i+1];
+                    } else if (!normalize(result.getResults().get(0).getName())
+                            .equals(s)){ // erstes suchresultat matched suchname nicht
+                        s += " " + inArr[i+1];
+                    } else {
+                        ic.addData(result.getResults().get(0).getName());
+                        ic.addData(String.valueOf(result.getResults().get(0).getId()));
+                        ic.setDialogState(Enumerations.DialogState.FAVORITE_ACTOR_REPLY);
+                        return ic;
                     }
-                    help = help.replaceFirst(" ", "");
-                    ic.addData(help);
                 }
-
-                // TODO ueberpruefe (mit TMDB Anfrage?) ob ic.getData().get(0) Schauspieler ist, sonst wieder loeschen
-                ic.setDialogState(Enumerations.DialogState.FAVORITE_ACTOR_REPLY);
-            }
-        } else {
-            //TODO
-        }
-
-        //nur testweise
-        if(ic.getData().size() > 0) {
-            HttpClient httpClient = new SimpleHttpClientBuilder().build();
-            HttpTools httpTools = new HttpTools(httpClient);
-            TmdbSearch instance = new TmdbSearch("ccea4a6c65c6edba1535e8e8014b0e77", httpTools);
-            try {
-                ResultList<PersonFind> result = instance.searchPeople(ic.getData().get(0), 0, false, null);
-                Log.d("ActorParser", result.toString());
-            } catch (MovieDbException e) {
-                e.printStackTrace();
             }
         }
+        catch (MovieDbException me){
+            me.printStackTrace();
+        }
+
         return ic;
     }
 
