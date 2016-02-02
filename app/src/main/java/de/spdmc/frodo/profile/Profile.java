@@ -1,14 +1,7 @@
 package de.spdmc.frodo.profile;
 
-import android.content.res.XmlResourceParser;
-
-import android.util.Xml;
-
-import org.xmlpull.v1.XmlSerializer;
-
+import java.util.ArrayList;
 import java.util.List;
-import java.lang.Object.*;
-import java.io.*;
 
 public class Profile {
 
@@ -24,9 +17,10 @@ public class Profile {
     private  String favorite_type = null;
     private  String favorite_actor = null;
     private  String favorite_genre = null;
-    private  List<String> favortie_movies = null;
-    private  List<String> favortie_series = null;
+    private  List<String> favorite_movies = new ArrayList<>();
+    private  List<String> favorite_series = new ArrayList<>();
     private String favorite_genre_id = null;
+    private String favorite_actor_id = null;
 
     private  String last_watched = null;
 
@@ -67,19 +61,19 @@ public class Profile {
     }
 
     public List<String> getFavorite_movies() {
-        return favortie_movies;
+        return favorite_movies;
     }
 
     public void addFavorite_movie(String mv) {
-        favortie_movies.add(mv);
+        favorite_movies.add(mv);
     }
 
     public List<String> getFavorite_series() {
-        return favortie_series;
+        return favorite_series;
     }
 
     public void addFavorite_serie(String serie) {
-        favortie_series.add(serie);
+        favorite_series.add(serie);
     }
 
     public List<String> getWatched_movies() {
@@ -139,6 +133,14 @@ public class Profile {
         this.favorite_genre_id = favorite_genre_id;
     }
 
+    public String getFavorite_actor_id() {
+        return favorite_actor_id;
+    }
+
+    public void setFavorite_actor_id(String favorite_actor_id) {
+        this.favorite_actor_id = favorite_actor_id;
+    }
+
     /*// Profil schreiben --> Pfad im Writer angeben
     public void write()
     {
@@ -161,8 +163,8 @@ public class Profile {
             this.favorite_type = pr.read().getFavorite_type();
             this.favortie_actor = pr.read().getFavorite_actor();
             this.favortie_genre = pr.read().getFavorite_genre();
-            this.favortie_movies = pr.read().getFavorite_movies();
-            this.favortie_series = pr.read().getFavorite_series();
+            this.favorite_movies = pr.read().getFavorite_movies();
+            this.favorite_series = pr.read().getFavorite_series();
             this.watched_movies = pr.read().getWatched_movies();
             this.watched_series = pr.read().getWatched_series();
             this.last_watched = pr.read().getLast_watched();
