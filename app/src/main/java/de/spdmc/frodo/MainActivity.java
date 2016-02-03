@@ -133,6 +133,7 @@ public class MainActivity extends AppCompatActivity {
                 boolean deleted = file.delete();
                 Log.v("log_tag", "deleted: " + deleted);
                 Toast.makeText(getApplicationContext(), "Das Profil wurde gelöscht", Toast.LENGTH_SHORT).show();
+                this.onCreate(null);
             } catch (Exception e) {
                 e.printStackTrace();
             }
