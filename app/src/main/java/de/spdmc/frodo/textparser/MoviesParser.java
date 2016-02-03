@@ -1,7 +1,5 @@
 package de.spdmc.frodo.textparser;
 
-import android.util.Log;
-
 import com.omertron.themoviedbapi.MovieDbException;
 import com.omertron.themoviedbapi.model.movie.MovieInfo;
 import com.omertron.themoviedbapi.results.ResultList;
@@ -9,9 +7,6 @@ import com.omertron.themoviedbapi.results.ResultList;
 import de.spdmc.frodo.Bot;
 import de.spdmc.frodo.enumerations.Enumerations;
 
-/**
- * Created by lars on 02.02.16.
- */
 public class MoviesParser extends Parser {
     @Override
     public InputContent parse(String in) {
@@ -29,44 +24,68 @@ public class MoviesParser extends Parser {
                 return ic;
             }
         }
+        else if(inArr[0].equals("mein")){
+            in = in.replaceFirst("mein ", "");
+            String[] help = new String[inArr.length-1];
+            for (int l = 0; l < help.length; l++) {
+                help[l] = inArr[l+1];
+            }
+            inArr = help;
+        }
         try {
             String s = in;
-            for (int i = inArr.length-1; (i >= inArr.length-3) && (i >= 0); i--){
+            MovieInfo bestRated = new MovieInfo();
+            bestRated.setVoteAverage(0.0f);
+            for (int i = inArr.length-1; i >= 0; i--){
                 ResultList<MovieInfo> result = Bot.tmdbSearch.searchMovie(s, 0, null, false, null, null, null);
                 if(result.isEmpty()){
                     s = "";
-                    for(int j = 0; j <= i-1; j++){
-                        s += inArr[j];
+                    for(int j = 0; j < i; j++){
+                        s += " " + inArr[j];
                     }
-                } else if (!removeArticles(normalize(result.getResults().get(0).getTitle()))
-                        .equals(removeArticles(s))){ // erstes suchresultat matched suchname nicht
-                    Log.d("MoviesParser",result.getResults().get(0).getTitle() + " does not equal " + s);
-                    s = "";
-                    for(int j = 0; j <= i-1; j++){
-                        s += inArr[j];
-                    }
+                    s = s.replaceFirst(" ", "");
                 } else {
-                    ic.addData(result.getResults().get(0).getTitle());
-                    ic.addData(String.valueOf(result.getResults().get(0).getId()));
-                    ic.setDialogState(Enumerations.DialogState.FAVORITE_MOVIES_ASK_MORE);
-                    return ic;
+                    bestRated = result.getResults().get(0);
+                    for(MovieInfo m : result.getResults()) {
+                        if (removeArticles(normalize(m.getTitle())).equals(removeArticles(s))) {
+                            ic.addData(m.getTitle());
+                            ic.addData(String.valueOf(m.getId()));
+                            ic.setDialogState(Enumerations.DialogState.FAVORITE_MOVIES_ASK_MORE);
+                            return ic;
+                        } else {
+                            if(m.getVoteAverage() > bestRated.getVoteAverage()){
+                                bestRated = m;
+                            }
+                        }
+                    }
                 }
             }
             if(ic.getData().isEmpty()){
-                s = inArr[0];
-                for (int i = 0; (i <= 1) && (i < inArr.length-1); i++){
+                s = in;
+                for (int i = 0; i < inArr.length; i++){
                     ResultList<MovieInfo> result = Bot.tmdbSearch.searchMovie(s, 0, null, false, null, null, null);
                     if(result.isEmpty()){
-                        s += " " + inArr[i+1];
-                    } else if (!normalize(result.getResults().get(0).getTitle().replace("the", "")
-                            .replace("der", "").replace("die", "").replace("das", ""))
-                            .equals(s)){ // erstes suchresultat matched suchname nicht
-                        Log.d("MoviesParser",result.getResults().get(0).getTitle() + " does not equal " + s);
-                        s += " " + inArr[i+1];
+                        s = "";
+                        for(int j = inArr.length-1; j > i; j--){
+                            s = inArr[j] + " " + s;
+                        }
+                        s = s.substring(0,s.length()-1);
                     } else {
-                        ic.addData(result.getResults().get(0).getTitle());
-                        ic.addData(String.valueOf(result.getResults().get(0).getId()));
-                        ic.setDialogState(Enumerations.DialogState.FAVORITE_MOVIES_ASK_MORE);
+                        for(MovieInfo m : result.getResults()) {
+                            if (removeArticles(normalize(m.getTitle())).equals(removeArticles(s))) {
+                                ic.addData(m.getTitle());
+                                ic.addData(String.valueOf(m.getId()));
+                                ic.setDialogState(Enumerations.DialogState.FAVORITE_MOVIES_ASK_MORE);
+                                return ic;
+                            } else {
+                                if(m.getVoteAverage() > bestRated.getVoteAverage()){
+                                    bestRated = m;
+                                }
+                            }
+                        }
+                        ic.addData(bestRated.getTitle());
+                        ic.addData(String.valueOf(bestRated.getId()));
+                        ic.setDialogState(Enumerations.DialogState.FAVORITE_MOVIES_ASK_CONFIRM);
                         return ic;
                     }
                 }
