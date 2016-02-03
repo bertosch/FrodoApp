@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -19,7 +20,10 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import java.io.File;
+
 import de.spdmc.frodo.data.Genres;
+import de.spdmc.frodo.profile.Profile;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "ChatActivity";
@@ -123,7 +127,15 @@ public class MainActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_reset) {
+            try {
+                String path = Bot.getContext().getFilesDir().toString();
+                File file = new File(path + "/" + "profile.xml");
+                boolean deleted = file.delete();
+                Log.v("log_tag", "deleted: " + deleted);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             return true;
         }
 
@@ -141,7 +153,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         // registriere den ResponseReceiver, so dass er auf BROADCAST_ACTION_BOT_ANSWER anspringt
-        IntentFilter intentFilter = new IntentFilter(IntentActions.BROADCAST_ACTION_BOT_ANSWER);
+        IntentFilter intentFilter = new IntentFilter(
+                IntentActions.BROADCAST_ACTION_BOT_ANSWER);
+                intentFilter.addAction(IntentActions.BROADCAST_ACTION_BOT_STATUS);
         receiver = new ResponseReceiver();
         LocalBroadcastManager.getInstance(this).registerReceiver(
                 receiver, intentFilter);
