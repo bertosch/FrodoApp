@@ -27,9 +27,7 @@ public class TvShowParser extends Parser {
         else if(inArr[0].equals("mein")){
             in = in.replaceFirst("mein ", "");
             String[] help = new String[inArr.length-1];
-            for (int l = 0; l < help.length; l++) {
-                help[l] = inArr[l+1];
-            }
+            System.arraycopy(inArr, 1, help, 0, help.length);
             inArr = help;
         }
         try {
