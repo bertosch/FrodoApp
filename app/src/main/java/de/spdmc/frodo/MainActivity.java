@@ -23,7 +23,6 @@ import android.widget.Toast;
 import java.io.File;
 
 import de.spdmc.frodo.data.Genres;
-import de.spdmc.frodo.profile.Profile;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "ChatActivity";
@@ -133,6 +132,7 @@ public class MainActivity extends AppCompatActivity {
                 File file = new File(path + "/" + "profile.xml");
                 boolean deleted = file.delete();
                 Log.v("log_tag", "deleted: " + deleted);
+                Toast.makeText(getApplicationContext(), "Das Profil wurde gelöscht", Toast.LENGTH_SHORT).show();
             } catch (Exception e) {
                 e.printStackTrace();
             }
