@@ -2,8 +2,6 @@ package de.spdmc.frodo.textparser;
 
 import de.spdmc.frodo.enumerations.Enumerations;
 import de.spdmc.frodo.profile.Profile;
-import de.spdmc.frodo.textparser.InputContent;
-import de.spdmc.frodo.textparser.Parser;
 
 public class NameWithdrawParser extends Parser {
 
@@ -30,7 +28,10 @@ public class NameWithdrawParser extends Parser {
         for (String s1 : this.pattern) {
             for (String s2 : inArr) {
                 if (s2.contains("name")) containsName = true;
-                else if(s2.contains(p.getName().toLowerCase())) containsName = true;
+                else {
+                    if (p.getName() != null)
+                        if(s2.contains(p.getName().toLowerCase())) containsName = true;
+                }
                 if (s2.contains(s1)) containsPatternEl = true;
             }
         }
