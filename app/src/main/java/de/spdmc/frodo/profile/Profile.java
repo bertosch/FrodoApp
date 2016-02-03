@@ -24,8 +24,8 @@ public class Profile {
 
     private  String last_watched = null;
 
-    private  List<String> watched_movies = null;
-    private  List<String> watched_series = null;
+    private  List<String> watched_movies = new ArrayList<>();
+    private  List<String> watched_series = new ArrayList<>();
 
     //getter, setter
     public  String getName() {
@@ -80,7 +80,7 @@ public class Profile {
         return watched_movies;
     }
 
-    public void addWachted_movie(String mv) {
+    public void addWatched_movie(String mv) {
         watched_movies.add(mv);
     }
 
