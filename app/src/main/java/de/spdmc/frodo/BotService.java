@@ -4,6 +4,7 @@ import android.app.IntentService;
 import android.app.Service;
 import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 
 
 /**
@@ -41,30 +42,29 @@ public class BotService extends IntentService {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         super.onStartCommand(intent, flags, startId);
-        if (intent == null) {
+
+        if (intent==null){
+            Log.d("BotService","onStartCommand() null");
             return Service.START_STICKY;
         }
 
         String action = intent.getAction();
 
         if(action.equalsIgnoreCase(ACTION_STOP)){
+            Log.d("BotService","onStartCommand() ACTION_STOP");
             stopForeground(true);
             stopSelf();
             return Service.START_NOT_STICKY;
         }
 
         if(action.equalsIgnoreCase(ACTION_START)){ //  && bot==null habe ich nicht verstanden (Lars)
+            Log.d("BotService","onStartCommand() ACTION_START");
             (new StartBotThread()).start();
         }
 
         return Service.START_STICKY;
     }
 
-    @Override
-    public void onDestroy() {
-
-        super.onDestroy();
-    }
 
     @Override
     protected void onHandleIntent(Intent intent) {
@@ -74,12 +74,8 @@ public class BotService extends IntentService {
 
             String question = intent.getStringExtra(EXTRA_QUESTION);
             if (question != null) {
+                Log.d("BotService", "onStartCommand() question:" + question);
                 String answer;
-                /*if (bot != null) {
-                    answer = bot.generateReply(question);
-                } else {
-                    answer = "Gimme some info, dude!";
-                }*/
                 answer = Bot.generateReply(question);
 
                 Intent localIntent =
@@ -95,7 +91,14 @@ public class BotService extends IntentService {
         }
     }
 
-    //TODO
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.d("BotService", "onDestroy()");
+    }
+
+
     //Thread for starting
     private final class StartBotThread extends Thread {
         @Override
