@@ -23,6 +23,8 @@ import android.widget.Toast;
 import java.io.File;
 
 import de.spdmc.frodo.data.Genres;
+import de.spdmc.frodo.enumerations.Enumerations;
+import de.spdmc.frodo.profile.Profile;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "ChatActivity";
@@ -73,8 +75,8 @@ public class MainActivity extends AppCompatActivity {
         buttonSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
-                // nur senden wenn Texteingabe nicht leer
-                if(!chatText.getText().toString().equals("")) sendChatMessage();
+                // nur senden wenn Texteingabe nicht leer oder nicht nur sonderzeichen
+                if(Bot.normalize(chatText.getText().toString()).split(" ").length > 0 && !Bot.normalize(chatText.getText().toString()).equals("")) sendChatMessage();
                 else Toast.makeText(getApplicationContext(), "Nachricht darf nicht leer sein!", Toast.LENGTH_SHORT).show();
             }
         });
@@ -133,7 +135,13 @@ public class MainActivity extends AppCompatActivity {
                 boolean deleted = file.delete();
                 Log.v("log_tag", "deleted: " + deleted);
                 Toast.makeText(getApplicationContext(), "Das Profil wurde gelöscht", Toast.LENGTH_SHORT).show();
-                this.onCreate(null);
+
+                // neustart der activity
+                Bot.setCurrentState(Enumerations.DialogState.PARSE_NAME);
+                Bot.setProfile(new Profile());
+                Intent intent = getIntent();
+                finish();
+                startActivity(intent);
             } catch (Exception e) {
                 e.printStackTrace();
             }
