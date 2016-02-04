@@ -7,19 +7,23 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.Timestamp;
 
 /**
  * Created by rob on 04.02.16.
  */
 public class ChatLogger {
     private static final String TAG = "ChatLogger";
+    private static int time = (int) (System.currentTimeMillis());
+    private static Timestamp tsTemp = new Timestamp(time);
+    private static String ts =  tsTemp.toString();
+    private static String path = Bot.getContext().getFilesDir().toString();
+    private static File file =new File(path + "/" + "chatlog" + ts + ".txt");
     public static void writeToFile (String data){
 
         try{
             //TODO
             //SAVE to external
-            String path = Bot.getContext().getFilesDir().toString();
-            File file =new File(path + "/" + "chatlog.txt");
             if(!file.exists()){
                 file.createNewFile();
             }
