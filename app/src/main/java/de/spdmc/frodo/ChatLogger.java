@@ -16,6 +16,8 @@ public class ChatLogger {
     public static void writeToFile (String data){
 
         try{
+            //TODO
+            //SAVE to external
             String path = Bot.getContext().getFilesDir().toString();
             File file =new File(path + "/" + "chatlog.txt");
             if(!file.exists()){
