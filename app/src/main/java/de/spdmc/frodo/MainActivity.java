@@ -139,6 +139,7 @@ public class MainActivity extends AppCompatActivity {
                 // neustart der activity
                 Bot.setCurrentState(Enumerations.DialogState.PARSE_NAME);
                 Bot.setProfile(new Profile());
+                Bot.resetSavedReply();
                 Intent intent = getIntent();
                 finish();
                 startActivity(intent);
