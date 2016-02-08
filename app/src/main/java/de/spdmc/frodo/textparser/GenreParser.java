@@ -74,7 +74,8 @@ public class GenreParser extends Parser {
             }
         }*/
         if(inArr.length >= 1 && answerQuestion){
-            if(inArr[0].equals("nein")){
+            if(inArr[0].contains("nein") || inArr[0].equals("nö") || inArr[0].equals("nä") || inArr[0].equals("ne")
+                    || inArr[0].startsWith("nee") || inArr[0].contains("nöö") || inArr[0].contains("nää")){
                 ic.setDialogState(Enumerations.DialogState.GENRE_DECLINED);
                 return ic;
             }
@@ -92,7 +93,8 @@ public class GenreParser extends Parser {
         }
         if(ic.getData().isEmpty() && answerQuestion){
             if(inArr.length >= 1){
-                if(inArr[0].equals("ja")){
+                if(inArr[0].equals("ja") || inArr[0].equals("jo") || inArr[0].contains("gern") || inArr[0].contains("natürlich")
+                        || inArr[0].equals("jap") || inArr[0].equals("joa")){
                     ic.setDialogState(Enumerations.DialogState.GENRE_REASK);
                 }
             }
