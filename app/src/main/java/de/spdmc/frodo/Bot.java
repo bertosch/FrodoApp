@@ -137,7 +137,7 @@ public class Bot {
                     if (ic.getDialogState() == null) ic = recommendationParser.parse(s);
                     currentState = ic.getDialogState();
                     // TODO andere Parser laufen lassen
-                    if(currentState == null) currentState = Enumerations.DialogState.FAVORITE_MOVIES_REASK;
+                    if(currentState == null) currentState = Enumerations.DialogState.FAVORITE_MOVIES_REASK_FAULT;
                     break;
                 case PARSE_FAVORITE_MOVIE_YES_NO:
                     ic = ynParser.parse(s);
@@ -149,7 +149,7 @@ public class Bot {
                     if (ic.getDialogState() == null) ic = recommendationParser.parse(s);
                     currentState = ic.getDialogState();
                     // TODO andere Parser laufen lassen
-                    if(currentState == null) currentState = Enumerations.DialogState.FAVORITE_TVSHOW_REASK;
+                    if(currentState == null) currentState = Enumerations.DialogState.FAVORITE_TVSHOW_REASK_FAULT;
                     break;
                 case PARSE_FAVORITE_TVSHOW_YES_NO:
                     ic = ynParser.parse(s);
@@ -200,7 +200,7 @@ public class Bot {
                     String type = ic.getData().get(0);
                     if(type.equals("film")) type = "Filme";
                     else if(type.equals("serie")) type = "Serien";
-                    reply = "Okay, du magst also " + type + ". hast du ein bestimmtes Lieblingsgenre?";
+                    reply = "Okay, du magst also " + type + ". Hast du ein Genre, das dir gefällt?";
                     p.setFavorite_type(ic.getData().get(0));
                     writeProfile();
                     currentState = Enumerations.DialogState.PARSE_GENRE;
@@ -208,7 +208,7 @@ public class Bot {
                 case GENRE_REPLY:
                     String name = ic.getData().get(0);
                     name = Character.toUpperCase(name.charAt(0)) + name.substring(1);
-                    reply = "Dein Lieblingsgenre ist also " + name + ". Hast du einen Lieblingsschauspieler?";
+                    reply = "Du magst also " + name + ". Hast du einen Lieblingsschauspieler?";
                     p.setFavorite_genre(ic.getData().get(0));
                     p.setFavorite_genre_id(ic.getData().get(1));
                     writeProfile();
@@ -256,15 +256,19 @@ public class Bot {
                     currentState = Enumerations.DialogState.PARSE_FAVORITE_ACTOR;
                     break;
                 case GENRE_DECLINED:
-                    reply = "Okay, du hast also kein spezielles Lieblingsgenre. Hast du einen Lieblingsschauspieler?";
+                    reply = "Okay, dann also ohne Genre. Hast du einen Lieblingsschauspieler?";
                     currentState = Enumerations.DialogState.PARSE_FAVORITE_ACTOR;
                     break;
                 case GENRE_REASK:
-                    reply = "Wie lautet dein Lieblingsgenre?";
+                    reply = "Dann nenn mir doch den Namen des Genres.";
                     currentState = Enumerations.DialogState.PARSE_GENRE;
                     break;
                 case FAVORITE_MOVIES_REASK:
                     reply = "Wie lautet dein Lieblingsfilm?";
+                    currentState = Enumerations.DialogState.PARSE_FAVORITE_MOVIE;
+                    break;
+                case FAVORITE_MOVIES_REASK_FAULT:
+                    reply = "Den kenne ich leider nicht. Wie lautet dein Lieblingsfilm?";
                     currentState = Enumerations.DialogState.PARSE_FAVORITE_MOVIE;
                     break;
                 case FAVORITE_MOVIES_DECLINED:
@@ -285,12 +289,12 @@ public class Bot {
                     savedIc = ic;
                     currentState = Enumerations.DialogState.PARSE_FAVORITE_MOVIE_YES_NO;
                     break;
-                case FAVORITE_MOVIES_IN_ADDITION:
-                    reply = "Hast du zusaetzlich auch einen Lieblingsfilm?";
-                    currentState = Enumerations.DialogState.PARSE_FAVORITE_MOVIE;
-                    break;
                 case FAVORITE_TVSHOW_REASK:
                     reply = "Wie lautet deine Lieblingsserie?";
+                    currentState = Enumerations.DialogState.PARSE_FAVORITE_TVSHOW;
+                    break;
+                case FAVORITE_TVSHOW_REASK_FAULT:
+                    reply = "Die kenne ich leider nicht. Wie lautet deine Lieblingsserie?";
                     currentState = Enumerations.DialogState.PARSE_FAVORITE_TVSHOW;
                     break;
                 case FAVORITE_TVSHOW_DECLINED:
@@ -310,10 +314,6 @@ public class Bot {
                     reply = "Meinst du " + ic.getData().get(0) + "?";
                     savedIc = ic;
                     currentState = Enumerations.DialogState.PARSE_FAVORITE_TVSHOW_YES_NO;
-                    break;
-                case FAVORITE_TVSHOW_IN_ADDITION:
-                    reply = "Hast du zusaetzlich auch eine Lieblingsserie?";
-                    currentState = Enumerations.DialogState.PARSE_FAVORITE_TVSHOW;
                     break;
                 case RECOMMEND:
                     reply = "Ich empfehle dir ";
