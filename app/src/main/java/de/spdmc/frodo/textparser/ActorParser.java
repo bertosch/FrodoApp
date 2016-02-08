@@ -19,14 +19,16 @@ public class ActorParser extends Parser {
         InputContent ic = new InputContent();
         String[] inArr = in.split(" ");
         if (inArr.length == 1){ // nur ja oder nein als Antwort
-            if(inArr[0].equals("ja")){
+            if (inArr[0].equals("ja") || inArr[0].equals("jo") || inArr[0].contains("gern") || inArr[0].contains("natürlich")
+                    || inArr[0].equals("jap") || inArr[0].equals("joa")) {
                 ic.setDialogState(Enumerations.DialogState.FAVORITE_ACTOR_REASK);
                 return ic;
             }
-            else if(inArr[0].equals("nein")){
-                ic.setDialogState(Enumerations.DialogState.FAVORITE_ACTOR_DECLINED);
-                return ic;
-            }
+        }
+        if (inArr[0].contains("nein") || inArr[0].equals("nö") || inArr[0].equals("nä") || inArr[0].equals("ne")
+                || inArr[0].startsWith("nee") || inArr[0].contains("nöö") || inArr[0].contains("nää")) {
+            ic.setDialogState(Enumerations.DialogState.FAVORITE_ACTOR_DECLINED);
+            return ic;
         }
         try {
             String s = inArr[inArr.length-1];

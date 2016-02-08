@@ -1,8 +1,6 @@
 package de.spdmc.frodo.textparser;
 
 import de.spdmc.frodo.enumerations.Enumerations;
-import de.spdmc.frodo.textparser.GreetingsParser;
-import de.spdmc.frodo.textparser.InputContent;
 
 public class NameParser extends Parser {
 
@@ -21,10 +19,12 @@ public class NameParser extends Parser {
         InputContent ic = new InputContent();
         String[] inArr = in.split(" ");
         GreetingsParser gp = new GreetingsParser();
-        if ((inArr[0].equals("nein") || in.contains("nicht")) && answerQuestion) {
+        if ((inArr[0].contains("nein") || inArr[0].equals("nö") || inArr[0].equals("nä") || inArr[0].equals("ne")
+                || inArr[0].startsWith("nee") || inArr[0].contains("nöö") || inArr[0].contains("nää") || in.contains("nicht")) && answerQuestion) {
             ic.setDialogState(Enumerations.DialogState.NAME_DECLINED);
             return ic;
-        } else if(inArr[0].equals("ja") && answerQuestion){
+        } else if (inArr[0].equals("ja") || inArr[0].equals("jo") || inArr[0].contains("gern") || inArr[0].contains("natürlich")
+                || inArr[0].equals("jap") || inArr[0].equals("joa") && answerQuestion) {
             ic.setDialogState(Enumerations.DialogState.NAME_REASK2);
             return ic;
         } else if ((inArr.length == 1 || inArr.length == 2) && answerQuestion) {
