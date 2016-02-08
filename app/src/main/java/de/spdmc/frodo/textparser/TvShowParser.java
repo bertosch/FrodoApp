@@ -15,12 +15,9 @@ public class TvShowParser extends Parser {
         String[] inArr = in.split(" ");
 
         if (inArr.length == 1){ // nur ja oder nein als Antwort
-            if(inArr[0].equals("ja")){
+            if(in.equals("ja") || in.equals("jo") || in.contains("gern") || in.contains("natürlich")
+                    || in.equals("jap") || in.equals("joa")){
                 ic.setDialogState(Enumerations.DialogState.FAVORITE_TVSHOW_REASK);
-                return ic;
-            }
-            else if(inArr[0].equals("nein")){
-                ic.setDialogState(Enumerations.DialogState.FAVORITE_TVSHOW_DECLINED);
                 return ic;
             }
         }
@@ -30,11 +27,17 @@ public class TvShowParser extends Parser {
             System.arraycopy(inArr, 1, help, 0, help.length);
             inArr = help;
         }
+        if(in.contains("nein") || in.equals("nö") || in.equals("nä") || in.equals("ne")
+                || in.startsWith("nee") || in.contains("nöö") || in.contains("nää")){
+            ic.setDialogState(Enumerations.DialogState.FAVORITE_MOVIES_DECLINED);
+            return ic;
+        }
         try {
             String s = in;
             TVBasic bestRated = new TVBasic();
             bestRated.setVoteAverage(0.0f);
             for (int i = inArr.length-1; i >= 0; i--){
+                // TODO de als language
                 ResultList<TVBasic> result = Bot.tmdbSearch.searchTV(s, 0, null, null, null);
                 if(result.isEmpty()){
                     s = "";
@@ -61,13 +64,14 @@ public class TvShowParser extends Parser {
             if(ic.getData().isEmpty()){
                 s = in;
                 for (int i = 0; i < inArr.length; i++){
+                    // TODO de als language
                     ResultList<TVBasic> result = Bot.tmdbSearch.searchTV(s, 0, null, null, null);
                     if(result.isEmpty()){
                         s = "";
                         for(int j = inArr.length-1; j > i; j--){
                             s = inArr[j] + " " + s;
                         }
-                        s = s.substring(0,s.length()-1);
+                        if(!s.equals("")) s = s.substring(0,s.length()-1);
                     } else {
                         for(TVBasic t : result.getResults()) {
                             if (removeArticles(normalize(t.getName())).equals(removeArticles(s))) {
