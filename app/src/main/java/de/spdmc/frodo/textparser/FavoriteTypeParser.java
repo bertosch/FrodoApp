@@ -1,7 +1,6 @@
 package de.spdmc.frodo.textparser;
 
 import de.spdmc.frodo.enumerations.Enumerations;
-import de.spdmc.frodo.textparser.InputContent;
 
 public class FavoriteTypeParser extends Parser {
 
@@ -24,6 +23,14 @@ public class FavoriteTypeParser extends Parser {
                 if (s2.contains(s1)) {
                     ic.addData(s1);
                     ic.setDialogState(Enumerations.DialogState.FAVORITE_TYPE_REPLY);
+                }
+                else if(s2.equals("ja")){
+                    ic.setDialogState(Enumerations.DialogState.FAVORITE_TYPE_REASK);
+                }
+                //TODO
+                //Alternative Verabschiedung
+                else if(s2.equals("nein")){
+                    ic.setDialogState(Enumerations.DialogState.GOODBYE);
                 }
             }
         }

@@ -189,6 +189,10 @@ public class Bot {
                     reply = "Okay, schade! Bist du auf der Suche nach Filmen oder Serien?";
                     currentState = Enumerations.DialogState.PARSE_FAVORITE_TYPE;
                     break;
+                case FAVORITE_TYPE_REASK:
+                    reply = "Filme oder Serien?";
+                    currentState = Enumerations.DialogState.PARSE_FAVORITE_TYPE;
+                    break;
                 case NAME_WITHDRAW:
                     reply = "Entschuldigung, dann habe ich das falsch "
                             + "verstanden! Wie ist denn dein Name?";
