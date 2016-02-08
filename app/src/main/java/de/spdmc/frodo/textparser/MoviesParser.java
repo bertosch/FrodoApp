@@ -15,26 +15,31 @@ public class MoviesParser extends Parser {
         String[] inArr = in.split(" ");
 
         if (inArr.length == 1){ // nur ja oder nein als Antwort
-            if(inArr[0].equals("ja")){
+            if(inArr[0].equals("ja") || inArr[0].equals("jo") || inArr[0].contains("gern")
+                    || inArr[0].contains("natürlich") || inArr[0].equals("jap") || inArr[0].equals("joa")){
                 ic.setDialogState(Enumerations.DialogState.FAVORITE_MOVIES_REASK);
                 return ic;
             }
-            else if(inArr[0].equals("nein")){
-                ic.setDialogState(Enumerations.DialogState.FAVORITE_MOVIES_DECLINED);
-                return ic;
+        }
+        else {
+            if (inArr[0].equals("mein")) {
+                in = in.replaceFirst("mein ", "");
+                String[] help = new String[inArr.length - 1];
+                System.arraycopy(inArr, 1, help, 0, help.length);
+                inArr = help;
             }
         }
-        else if(inArr[0].equals("mein")){
-            in = in.replaceFirst("mein ", "");
-            String[] help = new String[inArr.length-1];
-            System.arraycopy(inArr, 1, help, 0, help.length);
-            inArr = help;
+        if(inArr[0].contains("nein") || inArr[0].equals("nö") || inArr[0].equals("nä")
+                || inArr[0].equals("ne") || inArr[0].startsWith("nee") || inArr[0].contains("nöö") || inArr[0].contains("nää")){
+            ic.setDialogState(Enumerations.DialogState.FAVORITE_MOVIES_DECLINED);
+            return ic;
         }
         try {
             String s = in;
             MovieInfo bestRated = new MovieInfo();
             bestRated.setVoteAverage(0.0f);
             for (int i = inArr.length-1; i >= 0; i--){
+                // TODO de als language
                 ResultList<MovieInfo> result = Bot.tmdbSearch.searchMovie(s, 0, null, false, null, null, null);
                 if(result.isEmpty()){
                     s = "";
@@ -61,13 +66,14 @@ public class MoviesParser extends Parser {
             if(ic.getData().isEmpty()){
                 s = in;
                 for (int i = 0; i < inArr.length; i++){
+                    // TODO de als language
                     ResultList<MovieInfo> result = Bot.tmdbSearch.searchMovie(s, 0, null, false, null, null, null);
                     if(result.isEmpty()){
                         s = "";
                         for(int j = inArr.length-1; j > i; j--){
                             s = inArr[j] + " " + s;
                         }
-                        s = s.substring(0,s.length()-1);
+                        if(!s.equals("")) s = s.substring(0,s.length()-1);
                     } else {
                         for(MovieInfo m : result.getResults()) {
                             if (removeArticles(normalize(m.getTitle())).equals(removeArticles(s))) {
