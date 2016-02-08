@@ -17,7 +17,8 @@ public class YesNoParser extends Parser {
     @Override
     public InputContent parse(String in) {
         in = normalize(in);
-        if(in.contains("ja")){
+        if(in.equals("ja") || in.equals("jo") || in.contains("gern") || in.contains("natürlich")
+                || in.equals("jap") || in.equals("joa")){
             if(ic.getDialogState() == Enumerations.DialogState.FAVORITE_MOVIES_ASK_CONFIRM){
                 ic.setDialogState(Enumerations.DialogState.FAVORITE_MOVIES_ASK_MORE);
             } else if(ic.getDialogState() == Enumerations.DialogState.FAVORITE_TVSHOW_ASK_CONFIRM){
@@ -26,7 +27,8 @@ public class YesNoParser extends Parser {
                     ic.getDialogState() == Enumerations.DialogState.FAVORITE_TVSHOW_DECLINED){
                 ic.setDialogState(Enumerations.DialogState.RECOMMEND);
             }
-        } else if(in.contains("nein")){
+        } else if(in.contains("nein") || in.equals("nö") || in.equals("nä") || in.equals("ne")
+                || in.startsWith("nee") || in.contains("nöö") || in.contains("nää")){
             if(ic.getDialogState() == Enumerations.DialogState.FAVORITE_MOVIES_ASK_CONFIRM){
                 ic.setDialogState(Enumerations.DialogState.FAVORITE_MOVIES_REASK);
                 ic.getData().clear();
@@ -34,10 +36,9 @@ public class YesNoParser extends Parser {
                 ic.setDialogState(Enumerations.DialogState.FAVORITE_TVSHOW_REASK);
                 ic.getData().clear();
             } else if(ic.getDialogState() == Enumerations.DialogState.FAVORITE_MOVIES_DECLINED){
-                if(p.getFavorite_series().isEmpty()) ic.setDialogState(Enumerations.DialogState.FAVORITE_TVSHOW_IN_ADDITION);
+                // noch nichts... was machen wenn user (noch) keine vorschlaege will?
             } else if(ic.getDialogState() == Enumerations.DialogState.FAVORITE_TVSHOW_DECLINED) {
-                if (p.getFavorite_movies().isEmpty())
-                    ic.setDialogState(Enumerations.DialogState.FAVORITE_MOVIES_IN_ADDITION);
+                // noch nichts... was machen wenn user (noch) keine vorschlaege will?
             }
         }
         return ic;
