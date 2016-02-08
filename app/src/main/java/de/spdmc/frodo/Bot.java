@@ -25,6 +25,7 @@ import de.spdmc.frodo.textparser.MoviesParser;
 import de.spdmc.frodo.textparser.NameParser;
 import de.spdmc.frodo.textparser.NameWithdrawParser;
 import de.spdmc.frodo.textparser.QueryParser;
+import de.spdmc.frodo.textparser.QuestionParser;
 import de.spdmc.frodo.textparser.RecommendationParser;
 import de.spdmc.frodo.textparser.TvShowParser;
 import de.spdmc.frodo.textparser.YesNoParser;
@@ -44,6 +45,8 @@ public class Bot {
     private static ProfileReader reader = new ProfileReader();
     private static ProfileWriter writer = new ProfileWriter();
     private static InputContent savedIc;
+    private static Enumerations.DialogState savedState;
+    private static String savedReply = " Wie ist dein Name?";
 
     public static void readSavedProfile(){
         try {
@@ -63,6 +66,7 @@ public class Bot {
 
     public static String generateReply(String s) {
         String reply = null;
+
         // initialisiere Parser
         GreetingsParser greetingsParser = new GreetingsParser();
         QueryParser queryParser = new QueryParser();
@@ -75,6 +79,7 @@ public class Bot {
         MoviesParser moviesParser = new MoviesParser();
         TvShowParser tvShowParser = new TvShowParser();
         YesNoParser ynParser = new YesNoParser(savedIc, p);
+        QuestionParser questionParser = new QuestionParser(p);
 
         InputContent ic = new InputContent(); // InputContent der mit jeweiligem geparsten Inhalt gefuellt wird
 
@@ -84,7 +89,7 @@ public class Bot {
             switch (currentState) {
                 case PARSE_GREETING:
                     ic = greetingsParser.parse(s);
-                    // Wenn greetingsParser nicht trifft werden andere Bot probiert.
+                    // Wenn greetingsParser nicht trifft werden andere Parser probiert.
                     if (ic.getDialogState() == null) ic = nameParser.parse(s, true);
                     //if (ic.getDialogState() == null) ic = queryParser.parse(s);
                     if (ic.getDialogState() == null) ic = nameWithdrawParser.parse(s);
@@ -95,7 +100,7 @@ public class Bot {
                     break;
                 case PARSE_QUERY:
                     ic = queryParser.parse(s);
-                    // Wenn queryParser nicht trifft werden andere Bot probiert.
+                    // Wenn queryParser nicht trifft werden andere Parser probiert.
                     if (ic.getDialogState() == null) ic = nameWithdrawParser.parse(s);
                     if (ic.getDialogState() == null) ic = nameParser.parse(s);
                     if (ic.getDialogState() == null) ic = greetingsParser.parse(s);
@@ -103,7 +108,9 @@ public class Bot {
                     currentState = ic.getDialogState();
                     break;
                 case PARSE_NAME:
-                    ic = nameParser.parse(s, true);
+                    ic = parseQuestion(s,questionParser);
+                    if (ic.getDialogState() != null) savedState = currentState;
+                    else ic = nameParser.parse(s, true);
                     //if (ic.getDialogState() == null) ic = queryParser.parse(s);
                     if (ic.getDialogState() == null) ic = nameWithdrawParser.parse(s);
                     if (ic.getDialogState() == null) ic = recommendationParser.parse(s);
@@ -111,7 +118,9 @@ public class Bot {
                     if(currentState == null) currentState = Enumerations.DialogState.NAME_REASK;
                     break;
                 case PARSE_FAVORITE_TYPE:
-                    ic = favTypeParser.parse(s);
+                    ic = parseQuestion(s, questionParser);
+                    if (ic.getDialogState() != null) savedState = currentState;
+                    else ic = favTypeParser.parse(s);
                     //if (ic.getDialogState() == null) ic = queryParser.parse(s);
                     if (ic.getDialogState() == null) ic = nameWithdrawParser.parse(s);
                     if (ic.getDialogState() == null) ic = recommendationParser.parse(s);
@@ -119,45 +128,59 @@ public class Bot {
                     if(currentState == null) currentState = Enumerations.DialogState.FAVORITE_TYPE_FAULT_REPLY;
                     break;
                 case PARSE_GENRE:
-                    ic = genreParser.parse(s, true);
+                    ic = parseQuestion(s, questionParser);
+                    if (ic.getDialogState() != null) savedState = currentState;
+                    else ic = genreParser.parse(s, true);
                     if (ic.getDialogState() == null) ic = recommendationParser.parse(s);
                     // TODO andere Parser laufen lassen
                     currentState = ic.getDialogState();
                     if(currentState == null) currentState = Enumerations.DialogState.GENRE_FAULT_REPLY;
                     break;
                 case PARSE_FAVORITE_ACTOR:
-                    ic = actorParser.parse(s);
+                    ic = parseQuestion(s, questionParser);
+                    if (ic.getDialogState() != null) savedState = currentState;
+                    else ic = actorParser.parse(s);
                     if (ic.getDialogState() == null) ic = recommendationParser.parse(s);
                     currentState = ic.getDialogState();
                     // TODO andere Parser laufen lassen
                     if(currentState == null) currentState = Enumerations.DialogState.FAVORITE_ACTOR_FAULT_REPLY;
                     break;
                 case PARSE_FAVORITE_MOVIE:
-                    ic = moviesParser.parse(s);
+                    ic = parseQuestion(s, questionParser);
+                    if (ic.getDialogState() != null) savedState = currentState;
+                    else ic = moviesParser.parse(s);
                     if (ic.getDialogState() == null) ic = recommendationParser.parse(s);
                     currentState = ic.getDialogState();
                     // TODO andere Parser laufen lassen
                     if(currentState == null) currentState = Enumerations.DialogState.FAVORITE_MOVIES_REASK_FAULT;
                     break;
                 case PARSE_FAVORITE_MOVIE_YES_NO:
-                    ic = ynParser.parse(s);
+                    ic = parseQuestion(s, questionParser);
+                    if (ic.getDialogState() != null) savedState = currentState;
+                    else ic = ynParser.parse(s);
                     if (ic.getDialogState() == null) ic = recommendationParser.parse(s);
                     currentState = ic.getDialogState();
                     break;
                 case PARSE_FAVORITE_TVSHOW:
-                    ic = tvShowParser.parse(s);
+                    ic = parseQuestion(s,questionParser);
+                    if (ic.getDialogState() != null) savedState = currentState;
+                    else ic = tvShowParser.parse(s);
                     if (ic.getDialogState() == null) ic = recommendationParser.parse(s);
                     currentState = ic.getDialogState();
                     // TODO andere Parser laufen lassen
                     if(currentState == null) currentState = Enumerations.DialogState.FAVORITE_TVSHOW_REASK_FAULT;
                     break;
                 case PARSE_FAVORITE_TVSHOW_YES_NO:
-                    ic = ynParser.parse(s);
+                    ic = parseQuestion(s, questionParser);
+                    if (ic.getDialogState() != null) savedState = currentState;
+                    else ic = ynParser.parse(s);
                     if (ic.getDialogState() == null) ic = recommendationParser.parse(s);
                     currentState = ic.getDialogState();
                     break;
                 case PARSE_RECOMMENDATION_YES_NO:
-                    ic = ynParser.parse(s);
+                    ic = parseQuestion(s, questionParser);
+                    if (ic.getDialogState() != null) savedState = currentState;
+                    else ic = ynParser.parse(s);
                     currentState = ic.getDialogState();
                     break;
                 case GREETING_REPLY:
@@ -228,11 +251,11 @@ public class Bot {
                     break;
                 case FAVORITE_ACTOR_DECLINED:
                     if(p.getFavorite_type().equals("film")){
-                        reply = "Okay, Hast du einen Lieblingsfilm?";
+                        reply = "Okay. Hast du einen Lieblingsfilm?";
                         currentState = Enumerations.DialogState.PARSE_FAVORITE_MOVIE;
                     }
                     else {
-                        reply = "Okay, Hast du eine Lieblingsserie?";
+                        reply = "Okay. Hast du eine Lieblingsserie?";
                         currentState = Enumerations.DialogState.PARSE_FAVORITE_TVSHOW;
                     }
                     break;
@@ -252,7 +275,7 @@ public class Bot {
                     }
                     break;
                 case FAVORITE_ACTOR_FAULT_REPLY:
-                    reply = "Den kenne ich leider nicht, Hast du einen Lieblingsschauspieler?";
+                    reply = "Den kenne ich leider nicht. Hast du einen Lieblingsschauspieler?";
                     currentState = Enumerations.DialogState.PARSE_FAVORITE_ACTOR;
                     break;
                 case GENRE_DECLINED:
@@ -315,6 +338,77 @@ public class Bot {
                     savedIc = ic;
                     currentState = Enumerations.DialogState.PARSE_FAVORITE_TVSHOW_YES_NO;
                     break;
+                case QUESTION_REPLY_NAME:
+                    reply = "Dein Name ist " + ic.getData().get(0) + "." + savedReply;
+                    currentState = savedState;
+                    break;
+                case QUESTION_REPLY_NAME_FAULT:
+                    reply = "Ich kenne deinen Namen leider noch nicht." + savedReply;
+                    currentState = savedState;
+                    break;
+                case QUESTION_REPLY_FAV_ACTOR:
+                    reply = "Dein Lieblingsschauspieler ist " + ic.getData().get(0) + "." + savedReply;
+                    currentState = savedState;
+                    break;
+                case QUESTION_REPLY_FAV_ACTOR_FAULT:
+                    reply = "Du hast mir noch keinen Lieblingsschauspieler genannt." + savedReply;
+                    currentState = savedState;
+                    break;
+                case QUESTION_REPLY_FAV_GENRE:
+                    reply = "Du magst das Genre " + ic.getData().get(0) + " gern." + savedReply;
+                    currentState = savedState;
+                    break;
+                case QUESTION_REPLY_FAV_GENRE_FAULT:
+                    reply = "Du hast mir noch kein Genre genannt." + savedReply;
+                    currentState = savedState;
+                    break;
+                case QUESTION_REPLY_FAV_MOVIES:
+                    if(ic.getData().size() == 1) reply = "Dein Lieblingsfilm ist "
+                            + ic.getData().get(0) + "." + savedReply;
+                    else {
+                        reply = "Deine Lieblingsfilme sind ";
+                        for (String h : ic.getData()){
+                            reply += h + ", ";
+                        }
+                        reply = reply.substring(0, reply.length()-2);
+                        reply += "." + savedReply;
+                    }
+                    currentState = savedState;
+                    break;
+                case QUESTION_REPLY_FAV_MOVIES_FAULT:
+                    reply = "Du hast mir noch keinen Film genannt." + savedReply;
+                    currentState = savedState;
+                    break;
+                case QUESTION_REPLY_FAV_MOVIES_WRONG_TYPE:
+                    reply = "Du bist doch auf der Suche nach Serien und nicht nach Filmen." + savedReply;
+                    currentState = savedState;
+                    break;
+                case QUESTION_REPLY_FAV_SERIES:
+                    if(ic.getData().size() == 1) reply = "Deine Lieblingsserie ist "
+                            + ic.getData().get(0) + "." + savedReply;
+                    else {
+                        reply = "Deine Lieblingsserien sind ";
+                        for (String h : ic.getData()){
+                            reply += h + ", ";
+                        }
+                        reply = reply.substring(0, reply.length()-2);
+                        reply += "." + savedReply;
+                    }
+                    currentState = savedState;
+                    break;
+                case QUESTION_REPLY_FAV_SERIES_FAULT:
+                    reply = "Du hast mir noch keine Serie genannt." + savedReply;
+                    currentState = savedState;
+                    break;
+                case QUESTION_REPLY_FAV_SERIES_WRONG_TYPE:
+                    reply = "Du bist doch auf der Suche nach Filmen und nicht nach Serien." + savedReply;
+                    currentState = savedState;
+                    break;
+                case QUESTION_REPLY_NO_TYPE:
+                    reply = "Du hast mir doch noch gar nicht mitgeteilt, " +
+                            "ob du nach Filmen oder Serien suchst." + savedReply;
+                    currentState = savedState;
+                    break;
                 case RECOMMEND:
                     reply = "Ich empfehle dir ";
                     if(p.getFavorite_type() == null){
@@ -340,6 +434,9 @@ public class Bot {
                     break;
             }
         }
+        String[] splittetReply = reply.split("[.!]");
+        savedReply = splittetReply[splittetReply.length-1];
+        if (savedReply.charAt(0) != ' ') savedReply = " " + savedReply;
         return reply;
     }
 
@@ -376,5 +473,17 @@ public class Bot {
 
     public static void setProfile(Profile p){
         Bot.p = p;
+    }
+
+    private static InputContent parseQuestion(String in, QuestionParser qp){
+        InputContent ic = new InputContent();
+        if(in.endsWith("?")){
+            ic = qp.parse(in);
+        }
+        return ic;
+    }
+
+    public static void resetSavedReply(){
+        savedReply = " Wie ist dein Name?";
     }
 }
