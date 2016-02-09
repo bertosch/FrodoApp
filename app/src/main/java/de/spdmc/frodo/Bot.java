@@ -212,6 +212,10 @@ public class Bot {
                     reply = "Okay, schade! Bist du auf der Suche nach Filmen oder Serien?";
                     currentState = Enumerations.DialogState.PARSE_FAVORITE_TYPE;
                     break;
+                case FAVORITE_TYPE_REASK:
+                    reply = "Filme oder Serien?";
+                    currentState = Enumerations.DialogState.PARSE_FAVORITE_TYPE;
+                    break;
                 case NAME_WITHDRAW:
                     reply = "Entschuldigung, dann habe ich das falsch "
                             + "verstanden! Wie ist denn dein Name?";
@@ -295,7 +299,7 @@ public class Bot {
                     currentState = Enumerations.DialogState.PARSE_FAVORITE_MOVIE;
                     break;
                 case FAVORITE_MOVIES_DECLINED:
-                    reply = "Okay. Soll ich dir anhand der Informationen die ich über dich habe Vorschläge machen?";
+                    reply = "Okay. Soll ich dir anhand der gesammelten Informationen Vorschläge machen?";
                     savedIc = ic;
                     currentState = Enumerations.DialogState.PARSE_RECOMMENDATION_YES_NO;
                     break;
@@ -321,7 +325,7 @@ public class Bot {
                     currentState = Enumerations.DialogState.PARSE_FAVORITE_TVSHOW;
                     break;
                 case FAVORITE_TVSHOW_DECLINED:
-                    reply = "Okay. Soll ich dir anhand der Informationen die ich über dich habe Vorschläge machen?";
+                    reply = "Okay. Soll ich dir anhand der gesammelten Informationen Vorschläge machen?";
                     savedIc = ic;
                     currentState = Enumerations.DialogState.PARSE_RECOMMENDATION_YES_NO;
                     break;

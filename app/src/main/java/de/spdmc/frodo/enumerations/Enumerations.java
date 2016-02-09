@@ -14,6 +14,7 @@ public class Enumerations {
         NAME_WITHDRAW, // Namen widerrufen
         PARSE_FAVORITE_TYPE,
         FAVORITE_TYPE_REPLY,
+        FAVORITE_TYPE_REASK,
         PARSE_GENRE,
         GREETING_REPLY,
         GENRE_REPLY,

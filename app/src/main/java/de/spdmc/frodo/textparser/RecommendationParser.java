@@ -8,7 +8,7 @@ public class RecommendationParser extends Parser {
     public InputContent parse(String in) {
         in = normalize(in);
         InputContent ic = new InputContent();
-        if(in.contains("empfiehl") || in.contains("empfehl")){
+        if (in.contains("empfiehl") || in.contains("empfehl")) {
             ic.setDialogState(Enumerations.DialogState.RECOMMEND);
         }
         return ic;

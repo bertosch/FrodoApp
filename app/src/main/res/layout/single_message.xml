@@ -13,10 +13,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_margin="8dp"
             android:background="@drawable/txtview"
             android:text="Beispieltext"
-            android:textColor="@android:color/secondary_text_light" />
+            android:textColor="@android:color/primary_text_light" />
     </LinearLayout>
 
 </LinearLayout>

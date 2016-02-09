@@ -77,7 +77,8 @@ public class BotService extends IntentService {
                 Log.d("BotService", "onStartCommand() question:" + question);
                 String answer;
                 answer = Bot.generateReply(question);
-
+                ChatLogger.writeToFile("User: " + question);
+                ChatLogger.writeToFile("Frodo: " + answer);
                 Intent localIntent =
                         new Intent(IntentActions.BROADCAST_ACTION_BOT_ANSWER)
                                 // Answer into Intent
