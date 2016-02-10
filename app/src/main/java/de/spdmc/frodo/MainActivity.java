@@ -46,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         Bot.setContext(this.getApplicationContext());
         Bot.readSavedProfile();
+        Bot.initializeCon();
         Genres.fillGenres();
 
         /*FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
