@@ -17,8 +17,9 @@ public class YesNoParser extends Parser {
     @Override
     public InputContent parse(String in) {
         in = normalize(in);
-        if(in.equals("ja") || in.equals("jo") || in.contains("gern") || in.contains("natürlich")
-                || in.equals("jap") || in.equals("joa")){
+        String[] inArr = in.split(" ");
+        if(inArr[0].equals("ja") || inArr[0].equals("jo") || in.contains("gern") || in.contains("natürlich")
+                || inArr[0].equals("jap") || inArr[0].equals("joa")){
             if(ic.getDialogState() == Enumerations.DialogState.FAVORITE_MOVIES_ASK_CONFIRM){
                 ic.setDialogState(Enumerations.DialogState.FAVORITE_MOVIES_ASK_MORE);
             } else if(ic.getDialogState() == Enumerations.DialogState.FAVORITE_TVSHOW_ASK_CONFIRM){
@@ -27,7 +28,7 @@ public class YesNoParser extends Parser {
                     ic.getDialogState() == Enumerations.DialogState.FAVORITE_TVSHOW_DECLINED){
                 ic.setDialogState(Enumerations.DialogState.RECOMMEND);
             }
-        } else if(in.contains("nein") || in.equals("nö") || in.equals("nä") || in.equals("ne")
+        } else if(in.contains("nein") || inArr[0].equals("nö") || inArr[0].equals("nä") || inArr[0].equals("ne")
                 || in.startsWith("nee") || in.contains("nöö") || in.contains("nää")){
             if(ic.getDialogState() == Enumerations.DialogState.FAVORITE_MOVIES_ASK_CONFIRM){
                 ic.setDialogState(Enumerations.DialogState.FAVORITE_MOVIES_REASK);
