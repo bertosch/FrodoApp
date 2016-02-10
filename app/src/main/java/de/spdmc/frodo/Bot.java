@@ -22,6 +22,7 @@ import de.spdmc.frodo.textparser.FavoriteTypeParser;
 import de.spdmc.frodo.textparser.GenreParser;
 import de.spdmc.frodo.textparser.GreetingsParser;
 import de.spdmc.frodo.textparser.InputContent;
+import de.spdmc.frodo.textparser.MoreInfoParser;
 import de.spdmc.frodo.textparser.MoviesParser;
 import de.spdmc.frodo.textparser.NameParser;
 import de.spdmc.frodo.textparser.NameWithdrawParser;
@@ -54,7 +55,7 @@ public class Bot {
     public static void initializeCon(){
         try {
             con = new Connection(p);
-        } catch (MovieDbException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -92,6 +93,7 @@ public class Bot {
         YesNoParser ynParser = new YesNoParser(savedIc, p);
         QuestionParser questionParser = new QuestionParser(p);
         NextRecommendationParser nextRecommendationParser = new NextRecommendationParser();
+        MoreInfoParser moreInfoParser = new MoreInfoParser();
 
         InputContent ic = new InputContent(); // InputContent der mit jeweiligem geparsten Inhalt gefuellt wird
 
@@ -195,10 +197,13 @@ public class Bot {
                     else ic = ynParser.parse(s);
                     currentState = ic.getDialogState();
                     break;
-                case PARSE_NEXT_RECOMMENDATION:
+                case PARSE_RECOMMENDATION_REACTION:
                     ic = parseQuestion(s, questionParser);
                     if (ic.getDialogState() != null) savedState = currentState;
-                    else ic = nextRecommendationParser.parse(s);
+                    else {
+                        ic = moreInfoParser.parse(s);
+                        if(ic.getDialogState() == null) ic = nextRecommendationParser.parse(s);
+                    }
                     currentState = ic.getDialogState();
                     if(currentState == null) currentState = Enumerations.DialogState.NEXT_RECOMMENDATION_FAULT;
                     break;
@@ -331,7 +336,7 @@ public class Bot {
                         reply = speakRandomly(new String[]{
                                 "Okay, Hast du einen Lieblingsfilm?",
                                 "Nun gut, gibt es denn einen Film, den du besonders toll fandest?",
-                                "Ich auch nicht! Aber vielleicht einen Lieblingsfilm? Meiner ist Herr der Ring!!!"
+                                "Ich auch nicht! Aber vielleicht einen Lieblingsfilm? Meiner ist Herr der Ringe!!!"
                         });
                         currentState = Enumerations.DialogState.PARSE_FAVORITE_MOVIE;
                     }
@@ -368,7 +373,7 @@ public class Bot {
                             "Den kenne ich leider nicht. ",
                             "Damit kann ich leider nichts anfangen. "
                     }) +
-                            "Wer war nochmal dein/e LieblingsschauspielerIn";
+                            "Wer war nochmal dein/e LieblingsschauspielerIn?";
 
 
                     currentState = Enumerations.DialogState.PARSE_FAVORITE_ACTOR;
@@ -524,25 +529,34 @@ public class Bot {
                     }else {
                         try {
                             con.discover();
-                            reply += con.getTitle() + ".";
+                            reply += con.getInfo() + ".";
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
-                        currentState = Enumerations.DialogState.PARSE_NEXT_RECOMMENDATION;
+                        currentState = Enumerations.DialogState.PARSE_RECOMMENDATION_REACTION;
                     }
                     break;
                 case NEXT_RECOMMENDATION:
                     try {
                         con.setNext();
+                        reply = "Okay. Meine nächste Empfehlung ist " + con.getInfo() + ".";
                     } catch (Exception e) {
                         e.printStackTrace();
+                        reply = "Oops, da gab es wohl gerade ein Problem...";
                     }
-                    reply = "Okay. Meine nächste Empfehlung ist " + con.getTitle() + ".";
-                    currentState = Enumerations.DialogState.PARSE_NEXT_RECOMMENDATION;
+                    currentState = Enumerations.DialogState.PARSE_RECOMMENDATION_REACTION;
                     break;
                 case NEXT_RECOMMENDATION_FAULT:
                     reply = "Das habe ich leider nicht verstanden";
-                    currentState = Enumerations.DialogState.PARSE_NEXT_RECOMMENDATION;
+                    currentState = Enumerations.DialogState.PARSE_RECOMMENDATION_REACTION;
+                    break;
+                case MORE_INFO:
+                    try {
+                        reply = con.getOverview();
+                    } catch (MovieDbException e) {
+                        e.printStackTrace();
+                    }
+                    currentState = Enumerations.DialogState.PARSE_RECOMMENDATION_REACTION;
                     break;
                 case GOODBYE:
                     reply = "Ich hoffe ich konnte dir weiterhelfen! Bis zum nächsten mal.";
