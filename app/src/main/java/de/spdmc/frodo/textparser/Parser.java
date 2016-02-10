@@ -1,5 +1,7 @@
 package de.spdmc.frodo.textparser;
 
+import de.spdmc.frodo.Bot;
+
 public abstract class Parser {
 
     protected String[] pattern; // in pattern liegen (Teil-)Woerter nach denen
@@ -32,9 +34,7 @@ public abstract class Parser {
     }
 
     protected String normalize(String s) {
-        String normalizedStr = s.replaceAll("[^a-zA-Z 0-9äöüß]", "");
-        normalizedStr = normalizedStr.toLowerCase();
-        return normalizedStr;
+        return Bot.normalize(s);
     }
 
     protected String removeArticles(String s){
