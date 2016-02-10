@@ -66,7 +66,7 @@ public class QuestionParser extends Parser {
         } else if(Bot.getCurrentState() == Enumerations.DialogState.PARSE_GENRE){
             if((in.contains("welche") || in.contains("was für") || in.contains("was fuer"))
                     && (in.contains("genre") || in.contains("möglichkeit") || in.contains("moeglichkeit"))){
-                for (GermanGenre genre : Genres.genres){;
+                for (GermanGenre genre : Genres.genres){
                     ic.addData(genre.getName());
                     ic.setDialogState(Enumerations.DialogState.QUESTION_REPLY_GENRE_LIST);
                 }
