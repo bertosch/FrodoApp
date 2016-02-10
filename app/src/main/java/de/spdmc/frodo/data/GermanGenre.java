@@ -2,21 +2,39 @@ package de.spdmc.frodo.data;
 
 import com.omertron.themoviedbapi.model.Genre;
 
-public class GermanGenre extends Genre {
+public class GermanGenre {
 
-    private String germanName;
+    private String name;
+    private String[] pattern;
+    private String id;
 
-    public GermanGenre(String name, String germanName, int id){
+    public GermanGenre(String name, String[] pattern, int id){
         this.setName(name);
-        this.setGermanName(germanName);
+        this.setPattern(pattern);
         this.setId(id);
     }
 
-    public String getGermanName() {
-        return germanName;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public void setGermanName(String germanName) {
-        this.germanName = germanName;
+    public String getName() {
+        return name;
+    }
+
+    public void setId(int id) {
+        this.id = String.valueOf(id);
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public String[] getPattern() {
+        return pattern;
+    }
+
+    public void setPattern(String[] pattern) {
+        this.pattern = pattern;
     }
 }
