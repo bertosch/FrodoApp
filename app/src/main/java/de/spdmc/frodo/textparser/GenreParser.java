@@ -82,10 +82,12 @@ public class GenreParser extends Parser {
         }
         for (int i = 0; i < Genres.genres.length; i++) {
             GermanGenre curr = Genres.genres[i];
-            if (in.contains(curr.getName()) || in.contains(curr.getGermanName())) {
-                ic.addData(curr.getName());
-                ic.addData(Integer.toString(curr.getId()));
-                ic.setDialogState(Enumerations.DialogState.GENRE_REPLY);
+            for (String s : curr.getPattern()) {
+                if (in.contains(s)) {
+                    ic.addData(curr.getName());
+                    ic.addData(curr.getId());
+                    ic.setDialogState(Enumerations.DialogState.GENRE_REPLY);
+                }
             }
         }
         if(ic.getData().isEmpty() && answerQuestion){
