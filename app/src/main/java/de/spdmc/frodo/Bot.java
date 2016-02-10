@@ -3,6 +3,7 @@ package de.spdmc.frodo;
 import android.content.Context;
 import android.util.Log;
 
+import com.omertron.themoviedbapi.MovieDbException;
 import com.omertron.themoviedbapi.methods.TmdbSearch;
 import com.omertron.themoviedbapi.tools.HttpTools;
 
@@ -24,6 +25,7 @@ import de.spdmc.frodo.textparser.InputContent;
 import de.spdmc.frodo.textparser.MoviesParser;
 import de.spdmc.frodo.textparser.NameParser;
 import de.spdmc.frodo.textparser.NameWithdrawParser;
+import de.spdmc.frodo.textparser.NextRecommendationParser;
 import de.spdmc.frodo.textparser.QueryParser;
 import de.spdmc.frodo.textparser.QuestionParser;
 import de.spdmc.frodo.textparser.RecommendationParser;
@@ -47,6 +49,15 @@ public class Bot {
     private static InputContent savedIc;
     private static Enumerations.DialogState savedState;
     private static String savedReply = " Wie ist dein Name?";
+    private static Connection con;
+
+    public static void initializeCon(){
+        try {
+            con = new Connection(p);
+        } catch (MovieDbException e) {
+            e.printStackTrace();
+        }
+    }
 
     public static void readSavedProfile(){
         try {
@@ -80,6 +91,7 @@ public class Bot {
         TvShowParser tvShowParser = new TvShowParser();
         YesNoParser ynParser = new YesNoParser(savedIc, p);
         QuestionParser questionParser = new QuestionParser(p);
+        NextRecommendationParser nextRecommendationParser = new NextRecommendationParser();
 
         InputContent ic = new InputContent(); // InputContent der mit jeweiligem geparsten Inhalt gefuellt wird
 
@@ -183,6 +195,13 @@ public class Bot {
                     else ic = ynParser.parse(s);
                     currentState = ic.getDialogState();
                     break;
+                case PARSE_NEXT_RECOMMENDATION:
+                    ic = parseQuestion(s, questionParser);
+                    if (ic.getDialogState() != null) savedState = currentState;
+                    else ic = nextRecommendationParser.parse(s);
+                    currentState = ic.getDialogState();
+                    if(currentState == null) currentState = Enumerations.DialogState.NEXT_RECOMMENDATION_FAULT;
+                    break;
                 case GREETING_REPLY:
                     reply = speakRandomlyAppend(greetingsParser.getPattern(), ", wie ist dein Name?");
                     currentState = Enumerations.DialogState.PARSE_GREETING;
@@ -233,9 +252,7 @@ public class Bot {
                     currentState = Enumerations.DialogState.PARSE_GENRE;
                     break;
                 case GENRE_REPLY:
-                    String name = ic.getData().get(0);
-                    name = Character.toUpperCase(name.charAt(0)) + name.substring(1);
-                    reply = "Du magst also " + name + ". Hast du einen Lieblingsschauspieler?";
+                    reply = "Du magst also " + ic.getData().get(0) + ". Hast du einen Lieblingsschauspieler?";
                     p.setFavorite_genre(ic.getData().get(0));
                     p.setFavorite_genre_id(ic.getData().get(1));
                     writeProfile();
@@ -413,6 +430,15 @@ public class Bot {
                             "ob du nach Filmen oder Serien suchst." + savedReply;
                     currentState = savedState;
                     break;
+                case QUESTION_REPLY_GENRE_LIST:
+                    reply = "Du kannst aus den Genres ";
+                    for (String h : ic.getData()){
+                        reply += h + ", ";
+                    }
+                    reply = reply.substring(0, reply.length()-2);
+                    reply += " wählen." + savedReply;
+                    currentState = savedState;
+                    break;
                 case RECOMMEND:
                     reply = "Ich empfehle dir ";
                     if(p.getFavorite_type() == null){
@@ -420,15 +446,26 @@ public class Bot {
                         currentState = Enumerations.DialogState.PARSE_FAVORITE_TYPE;
                     }else {
                         try {
-                            Connection con = new Connection(p);
                             con.discover();
-                            reply += con.getTitle();
+                            reply += con.getTitle() + ".";
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
-                        reply += "\nIch hoffe ich konnte dir weiterhelfen! Bis zum nächsten mal.";
-                        currentState = Enumerations.DialogState.GOODBYE;
+                        currentState = Enumerations.DialogState.PARSE_NEXT_RECOMMENDATION;
                     }
+                    break;
+                case NEXT_RECOMMENDATION:
+                    try {
+                        con.setNext();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    reply = "Okay. Meine nächste Empfehlung ist " + con.getTitle() + ".";
+                    currentState = Enumerations.DialogState.PARSE_NEXT_RECOMMENDATION;
+                    break;
+                case NEXT_RECOMMENDATION_FAULT:
+                    reply = "Das habe ich leider nicht verstanden";
+                    currentState = Enumerations.DialogState.PARSE_NEXT_RECOMMENDATION;
                     break;
                 case GOODBYE:
                     reply = "Ich hoffe ich konnte dir weiterhelfen! Bis zum nächsten mal.";
@@ -470,7 +507,7 @@ public class Bot {
     }
 
     public static String normalize(String s) {
-        String normalizedStr = s.replaceAll("[^a-zA-Z 0-9äöüß]", "");
+        String normalizedStr = s.replaceAll("[^a-zA-Z 0-9äöüßáàâéèêíìîóòôúùû]", "");
         normalizedStr = normalizedStr.toLowerCase();
         return normalizedStr;
     }
@@ -489,5 +526,9 @@ public class Bot {
 
     public static void resetSavedReply(){
         savedReply = " Wie ist dein Name?";
+    }
+
+    public static Enumerations.DialogState getCurrentState(){
+        return Bot.currentState;
     }
 }
