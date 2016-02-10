@@ -214,13 +214,22 @@ public class Bot {
                     break;
                 case NAME_REPLY:
                     reply = "Freut mich dich kennenzulernen, "
-                            + ic.getData().get(0) + "! Bist du auf der Suche nach Filmen oder Serien?";
+                            + ic.getData().get(0) + speakRandomly(new String[]{
+                            "! Bist du auf der Suche nach Filmen oder Serien?",
+                            "! Wonach suchst du, Filme oder Serien?",
+                            "! Wonach suchen wir für dich? Filme oder Serien?",
+                            "! Was wäre dir jetzt lieber? Ein Film oder eine neue Serie?"
+                    });
                     p.setName(ic.getData().get(0));
                     writeProfile();
                     currentState = Enumerations.DialogState.PARSE_FAVORITE_TYPE;
                     break;
                 case NAME_REASK:
-                    reply = "Willst du mir deinen Namen verraten?";
+                    reply = speakRandomly(new String[]{
+                            "Willst du mir deinen Namen verraten?",
+                            "Wie heißt du eigentlich?",
+                            "Wir können gleich loslegen, wenn du mir deinen Namen verraten hast!"
+                    });
                     currentState = Enumerations.DialogState.PARSE_NAME;
                     break;
                 case NAME_REASK2:
@@ -228,7 +237,16 @@ public class Bot {
                     currentState = Enumerations.DialogState.PARSE_NAME;
                     break;
                 case NAME_DECLINED:
-                    reply = "Okay, schade! Bist du auf der Suche nach Filmen oder Serien?";
+                    reply = speakRandomly(new String[]{
+                            "Okay, schade! ",
+                            "Soso, dann ohne Namen ;)! ?",
+                            "Schade, ich hätte gern deinen Namen erfahren. "
+
+                    }) + speakRandomly(new String[]{
+                            "Bist du auf der Suche nach Filmen oder Serien ? ",
+                            "Was suchen wir für dich, einen Film oder eine Serie",
+                            "Wie gehts weiter, Film oder Serie?"
+                    });
                     currentState = Enumerations.DialogState.PARSE_FAVORITE_TYPE;
                     break;
                 case FAVORITE_TYPE_REASK:
@@ -246,37 +264,84 @@ public class Bot {
                     String type = ic.getData().get(0);
                     if(type.equals("film")) type = "Filme";
                     else if(type.equals("serie")) type = "Serien";
-                    reply = "Okay, du magst also " + type + ". Hast du ein Genre, das dir gefällt?";
+                    reply = speakRandomly(new String[]{
+                            "Okay, du magst also ",
+                            "Super, ich mag auch ",
+                            "Alles klar, wer mag keine "
+                    }) + type +
+                            speakRandomly(new String[]{
+                                    "... Gibt es ein Genre, indem ich für dich suchen soll?",
+                                    "... Dann fahren wir fort. Gibt es ein Genre?",
+                                    "... Genre?"
+                            });
                     p.setFavorite_type(ic.getData().get(0));
                     writeProfile();
                     currentState = Enumerations.DialogState.PARSE_GENRE;
                     break;
                 case GENRE_REPLY:
-                    reply = "Du magst also " + ic.getData().get(0) + ". Hast du einen Lieblingsschauspieler?";
+                    String name = ic.getData().get(0);
+                    name = Character.toUpperCase(name.charAt(0)) + name.substring(1);
+                    reply = speakRandomly(new String[]{
+                            "Dein Lieblingsgenre ist also " + name,
+                            "Du stehst also auf " + name,
+                            "Du magst also " + name
+                    }) + speakRandomly(new String[]{
+                            ". Hast du eine/n LieblingsschauspielerIn?",
+                            ". Gibt es eine/n SchauspielerIn, den du besonders toll findest?",
+                            ". Darf es auch ein/e bestimmte/r SchauspielerIn sein?"
+                    });
                     p.setFavorite_genre(ic.getData().get(0));
                     p.setFavorite_genre_id(ic.getData().get(1));
                     writeProfile();
                     currentState = Enumerations.DialogState.PARSE_FAVORITE_ACTOR;
                     break;
                 case GENRE_FAULT_REPLY:
-                    reply = "Das habe ich leider nicht verstanden. Hast du ein Genre, das du besonders magst?";
+                    reply = speakRandomly(new String[]{
+                            "Das habe ich leider nicht verstanden. ",
+                            "Oops, damit kann ich nichts anfangen! "
+                    }) + speakRandomly(new String[]{
+                            "Hast du ein Genre, das du besonders magst?",
+                            "Gib mir bitte ein Genre, auf das du gerade Bock hast!"
+                    });
                     currentState = Enumerations.DialogState.PARSE_GENRE;
                     break;
                 case FAVORITE_TYPE_FAULT_REPLY:
-                    reply = "Das habe ich leider nicht verstanden. Bist du auf der Suche nach Filmen oder Serien?";
+                    reply = speakRandomly(new String[]{
+                            "Das habe ich leider nicht verstanden. ",
+                            "Oops, damit kann ich nichts anfangen! "
+                    }) + speakRandomly(new String[]{
+                            "Bist du auf der Suche nach Filmen oder Serien?",
+                            "Film oder Serie?",
+                            "Ich kann dir ohne diese Angabe nicht weiterhelfen. Also suchen wir einen Film oder eine Serie für dich?"
+                    });
                     currentState = Enumerations.DialogState.PARSE_FAVORITE_TYPE;
                     break;
                 case FAVORITE_ACTOR_REASK:
-                    reply = "Magst du mir den Namen verraten?";
+                    reply = speakRandomly(new String[]{
+                            "Magst du mir den Namen verraten?",
+                            "Wie heißt denn eben jener?",
+                            "Hat er auch einen Namen?",
+                            "Ich kann leider nicht deine Gedanken lesen... Den Namen müsstest du mir schon verraten!",
+
+                    });
                     currentState = Enumerations.DialogState.PARSE_FAVORITE_ACTOR;
                     break;
                 case FAVORITE_ACTOR_DECLINED:
                     if(p.getFavorite_type().equals("film")){
-                        reply = "Okay. Hast du einen Lieblingsfilm?";
+                        reply = speakRandomly(new String[]{
+                                "Okay, Hast du einen Lieblingsfilm?",
+                                "Nun gut, gibt es denn einen Film, den du besonders toll fandest?",
+                                "Ich auch nicht! Aber vielleicht einen Lieblingsfilm? Meiner ist Herr der Ring!!!"
+                        });
                         currentState = Enumerations.DialogState.PARSE_FAVORITE_MOVIE;
                     }
                     else {
-                        reply = "Okay. Hast du eine Lieblingsserie?";
+                        reply = speakRandomly(new String[]{
+                                "Okay, Hast du eine Lieblingsserie?",
+                                "Gut, gibts eine Serie, die du toll fandest?",
+                                "Wer kennt schon Seriendarsteller namentlich? Gibt es denn eine Lieblingsserie?"
+
+                        });
                         currentState = Enumerations.DialogState.PARSE_FAVORITE_TVSHOW;
                     }
                     break;
@@ -287,7 +352,10 @@ public class Bot {
                     Log.d(TAG, p.getFavorite_actor() + ", " + p.getFavorite_actor_id());
                     writeProfile();
                     if(p.getFavorite_type().equals("film")){
-                        reply += " Hast du einen Lieblingsfilm?";
+                        reply += speakRandomly(new String[]{
+                                ". Hast du auch einen Lieblingsfilm?",
+                                ", gibt es denn einen Film, den du besonders toll fandest?"
+                        });
                         currentState = Enumerations.DialogState.PARSE_FAVORITE_MOVIE;
                     }
                     else {
@@ -296,7 +364,13 @@ public class Bot {
                     }
                     break;
                 case FAVORITE_ACTOR_FAULT_REPLY:
-                    reply = "Den kenne ich leider nicht. Hast du einen Lieblingsschauspieler?";
+                    reply = speakRandomly(new String[]{
+                            "Den kenne ich leider nicht. ",
+                            "Damit kann ich leider nichts anfangen. "
+                    }) +
+                            "Wer war nochmal dein/e LieblingsschauspielerIn";
+
+
                     currentState = Enumerations.DialogState.PARSE_FAVORITE_ACTOR;
                     break;
                 case GENRE_DECLINED:
@@ -442,7 +516,10 @@ public class Bot {
                 case RECOMMEND:
                     reply = "Ich empfehle dir ";
                     if(p.getFavorite_type() == null){
-                        reply = "Du musst mir erst einmal sagen, ob du nach einer Serie oder nach einem Film suchst.";
+                        reply = speakRandomly(new String[]{
+                                "Du musst mir erst einmal sagen, ob du nach einer Serie oder nach einem Film suchst.",
+                                "Wonach suchst du, Filme oder Serien?"
+                        });
                         currentState = Enumerations.DialogState.PARSE_FAVORITE_TYPE;
                     }else {
                         try {
@@ -470,6 +547,11 @@ public class Bot {
                 case GOODBYE:
                     reply = "Ich hoffe ich konnte dir weiterhelfen! Bis zum nächsten mal.";
                     break;
+                //TODO
+                // Alternative Verabschiedung, wenn nicht nach Serien oder Filmen gesucht werden soll
+                /*case ALTERNATE_GOODBYE:
+                    break;
+                 */
                 default:
                     reply = "Das habe ich leider nicht richtig verstanden.";
                     break;

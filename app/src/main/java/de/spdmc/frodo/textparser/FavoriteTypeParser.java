@@ -29,7 +29,7 @@ public class FavoriteTypeParser extends Parser {
                 }
                 //TODO
                 //Alternative Verabschiedung
-                else if(s2.equals("nein")){
+                else if(s2.equals("nein") || s2.contains("nicht")){
                     ic.setDialogState(Enumerations.DialogState.GOODBYE);
                 }
             }

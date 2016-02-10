@@ -75,7 +75,7 @@ public class GenreParser extends Parser {
         }*/
         if(inArr.length >= 1 && answerQuestion){
             if(inArr[0].contains("nein") || inArr[0].equals("nö") || inArr[0].equals("nä") || inArr[0].equals("ne")
-                    || inArr[0].startsWith("nee") || inArr[0].contains("nöö") || inArr[0].contains("nää")){
+                    || inArr[0].startsWith("nee") || inArr[0].contains("nöö") || inArr[0].contains("nää") || in.contains("kein")){
                 ic.setDialogState(Enumerations.DialogState.GENRE_DECLINED);
                 return ic;
             }

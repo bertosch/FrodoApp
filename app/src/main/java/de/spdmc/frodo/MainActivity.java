@@ -141,6 +141,8 @@ public class MainActivity extends AppCompatActivity {
                 Bot.setCurrentState(Enumerations.DialogState.PARSE_NAME);
                 Bot.setProfile(new Profile());
                 Bot.resetSavedReply();
+                ChatLogger.writeToFile("-------------------------------------------");
+                ChatLogger.writeToFile("--------PROFIL wurde zurückgesetzt---------");
                 Intent intent = getIntent();
                 finish();
                 startActivity(intent);

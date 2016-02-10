@@ -64,8 +64,8 @@ public class QuestionParser extends Parser {
                     ic.setDialogState(Enumerations.DialogState.QUESTION_REPLY_FAV_SERIES_WRONG_TYPE);
             } else ic.setDialogState(Enumerations.DialogState.QUESTION_REPLY_NO_TYPE);
         } else if(Bot.getCurrentState() == Enumerations.DialogState.PARSE_GENRE){
-            if((in.contains("welche") || in.contains("was für") || in.contains("was fuer"))
-                    && (in.contains("genre") || in.contains("möglichkeit") || in.contains("moeglichkeit"))){
+            if((in.contains("welche") || in.contains("was")) && (in.contains("genre")
+                    || in.contains("möglichkeit") || in.contains("moeglichkeit") || in.contains("gibt") || in.contains("hast"))){
                 for (GermanGenre genre : Genres.genres){
                     ic.addData(genre.getName());
                     ic.setDialogState(Enumerations.DialogState.QUESTION_REPLY_GENRE_LIST);

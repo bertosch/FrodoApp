@@ -9,14 +9,20 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Timestamp;
+import java.util.Calendar;
+
+
 
 /**
  * Created by rob on 04.02.16.
  */
 public class ChatLogger {
     private static final String TAG = "ChatLogger";
-    private static int time = (int) (System.currentTimeMillis());
-    private static Timestamp tsTemp = new Timestamp(time);
+    //private static int time = (int) (System.currentTimeMillis());
+    //private static Calendar calendar = Calendar.getInstance();
+    //private static Timestamp tsTemp = new Timestamp(time);
+    //private static Date tsTemp = new Date(calendar.getTime().getTime());
+    private static Timestamp tsTemp = new Timestamp(Calendar.getInstance().getTime().getTime());
     private static String ts =  tsTemp.toString();
     private static String path = Bot.getContext().getExternalFilesDir(null).toString();
     private static File file =new File(path + "/" + "chatlog" + ts + ".txt");
@@ -48,7 +54,6 @@ public class ChatLogger {
 
             pw.println(data);
             Log.d(TAG, "writeToFile():" + data);
-            Log.d(TAG, file.getAbsolutePath());
             pw.println("");
 
             pw.close();
