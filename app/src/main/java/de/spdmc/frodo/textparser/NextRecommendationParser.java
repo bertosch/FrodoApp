@@ -8,7 +8,8 @@ public class NextRecommendationParser extends Parser {
     public InputContent parse(String in) {
         InputContent ic = new InputContent();
         if(((in.contains("schon") || in.contains("bereits")) && (in.contains("sehen") || in.contains("kenne")))
-                || (in.contains("mag") && in.contains("nicht"))){
+                || ((in.contains("mag") || in.contains("zufrieden")
+                || in.contains("glücklich") || in.contains("gluecklich")) && in.contains("nicht"))){
             ic.setDialogState(Enumerations.DialogState.NEXT_RECOMMENDATION);
         } else ic.setDialogState(Enumerations.DialogState.NEXT_RECOMMENDATION_FAULT);
         return ic;
