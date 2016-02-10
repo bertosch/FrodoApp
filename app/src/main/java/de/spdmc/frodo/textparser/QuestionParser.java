@@ -1,5 +1,8 @@
 package de.spdmc.frodo.textparser;
 
+import de.spdmc.frodo.Bot;
+import de.spdmc.frodo.data.Genres;
+import de.spdmc.frodo.data.GermanGenre;
 import de.spdmc.frodo.enumerations.Enumerations;
 import de.spdmc.frodo.profile.Profile;
 
@@ -60,6 +63,14 @@ public class QuestionParser extends Parser {
                 } else
                     ic.setDialogState(Enumerations.DialogState.QUESTION_REPLY_FAV_SERIES_WRONG_TYPE);
             } else ic.setDialogState(Enumerations.DialogState.QUESTION_REPLY_NO_TYPE);
+        } else if(Bot.getCurrentState() == Enumerations.DialogState.PARSE_GENRE){
+            if((in.contains("welche") || in.contains("was für") || in.contains("was fuer"))
+                    && (in.contains("genre") || in.contains("möglichkeit") || in.contains("moeglichkeit"))){
+                for (GermanGenre genre : Genres.genres){;
+                    ic.addData(genre.getName());
+                    ic.setDialogState(Enumerations.DialogState.QUESTION_REPLY_GENRE_LIST);
+                }
+            }
         }
 
         return ic;
