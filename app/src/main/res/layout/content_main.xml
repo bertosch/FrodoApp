@@ -45,7 +45,7 @@
             android:layout_height="fill_parent"
             android:layout_weight="1"
             android:text="Send"
-            android:background="#303f9f" />
+            android:background="#9E9E9E" />
 
     </LinearLayout>
 </LinearLayout>
