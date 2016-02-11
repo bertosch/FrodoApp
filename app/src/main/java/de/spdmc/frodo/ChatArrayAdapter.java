@@ -53,7 +53,7 @@ class ChatArrayAdapter extends ArrayAdapter<ChatMessage> {
         ChatMessage chatMessageObj = getItem(position);
         chatText = (TextView) row.findViewById(R.id.singleMessage);
         chatText.setText(chatMessageObj.message);
-        //chatText.setBackgroundResource(chatMessageObj.left ? R.drawable.msg_links : R.drawable.msg_rechts);
+        chatText.setBackgroundResource(chatMessageObj.left ? R.drawable.txtview2 : R.drawable.txtview);
         singleMessage.setGravity(chatMessageObj.left ? Gravity.LEFT : Gravity.RIGHT);
         return row;
     }
