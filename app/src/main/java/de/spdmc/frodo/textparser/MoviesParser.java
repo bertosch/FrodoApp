@@ -16,7 +16,7 @@ public class MoviesParser extends Parser {
 
         if (inArr.length == 1){ // nur ja oder nein als Antwort
             if(inArr[0].equals("ja") || inArr[0].equals("jo") || inArr[0].contains("gern")
-                    || inArr[0].contains("natürlich") || inArr[0].equals("jap") || inArr[0].equals("joa")){
+                    || inArr[0].contains("natürlich") || inArr[0].equals("jap") || inArr[0].equals("joa") || inArr[0].contains("genau")){
                 ic.setDialogState(Enumerations.DialogState.FAVORITE_MOVIES_REASK);
                 return ic;
             }
@@ -30,7 +30,7 @@ public class MoviesParser extends Parser {
             }
         }
         if(inArr[0].contains("nein") || inArr[0].equals("nö") || inArr[0].equals("nä")
-                || inArr[0].equals("ne") || inArr[0].startsWith("nee") || inArr[0].contains("nöö") || inArr[0].contains("nää")){
+                || inArr[0].equals("ne") || inArr[0].startsWith("nee") || inArr[0].contains("nöö") || inArr[0].contains("nää") || in.contains("keine weiteren") || in.contains("sonst keine")){
             ic.setDialogState(Enumerations.DialogState.FAVORITE_MOVIES_DECLINED);
             return ic;
         }
