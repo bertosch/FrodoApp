@@ -13,6 +13,7 @@ import com.omertron.themoviedbapi.model.tv.TVBasic;
 import com.omertron.themoviedbapi.model.tv.TVInfo;
 import com.omertron.themoviedbapi.results.ResultList;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -24,8 +25,8 @@ public class Connection {
     private int page = 1;
     private List<MovieBasic> resultMovie;
     private List<TVBasic> resultTV;
-    private List<MovieInfo> similarMovies;
-    private List<TVInfo> similarTVs;
+    private List<MovieInfo> similarMovies = new ArrayList<>();
+    private List<TVInfo> similarTVs = new ArrayList<>();
     private String favorite_type;
     private Profile p;
     private TVInfo tvinfo;
@@ -149,31 +150,37 @@ public class Connection {
         try {
             ResultList<PersonFind> persons = tmdb.searchPeople(actorID,null,null, SearchType.PHRASE);
             ID = String.valueOf(persons.getResults().get(0).getId());
-        } catch (MovieDbException e) {}
+        } catch (MovieDbException e) {
+            e.printStackTrace();
+        }
         return ID;
     }
     //aehnliche Filme von den Lieblingsfilmen holen
     private void similarMovies() throws MovieDbException {
-        int id;
-        String title = p.getFavorite_movies().get(0);
-        id = tmdb.searchMovie(title, 0, "de", false,null,null,SearchType.PHRASE).getResults().get(0).getId();
-        similarMovies = tmdb.getSimilarMovies(id,0,"de").getResults();
-        for (int i=1; i<p.getFavorite_movies().size();i++){
-            title = p.getFavorite_movies().get(i);
-            id = tmdb.searchMovie(title, 0, "de", false,null,null,SearchType.PHRASE).getResults().get(0).getId();
-            similarMovies.addAll(tmdb.getSimilarMovies(id,0,"de").getResults());
+        if(!p.getFavorite_movies().isEmpty()) {
+            int id;
+            String title = p.getFavorite_movies().get(0);
+            id = tmdb.searchMovie(title, 0, "de", false, null, null, SearchType.PHRASE).getResults().get(0).getId();
+            similarMovies = tmdb.getSimilarMovies(id, 0, "de").getResults();
+            for (int i = 1; i < p.getFavorite_movies().size(); i++) {
+                title = p.getFavorite_movies().get(i);
+                id = tmdb.searchMovie(title, 0, "de", false, null, null, SearchType.PHRASE).getResults().get(0).getId();
+                similarMovies.addAll(tmdb.getSimilarMovies(id, 0, "de").getResults());
+            }
         }
     }
     //aehnliche Serien von den Lieblingsserien holen
     private void similarTVs() throws MovieDbException {
-        int id;
-        String title = p.getFavorite_series().get(0);
-        id = tmdb.searchTV(title, 0, "de",null,SearchType.PHRASE).getResults().get(0).getId();
-        similarTVs = tmdb.getTVSimilar(id,0,"de").getResults();
-        for (int i=1; i<p.getFavorite_series().size();i++){
-            title = p.getFavorite_series().get(i);
-            id = tmdb.searchTV(title, 0, "de",null,SearchType.PHRASE).getResults().get(0).getId();
-            similarTVs.addAll(tmdb.getTVSimilar(id,0,"de").getResults());
+        if(!p.getFavorite_series().isEmpty()) {
+            int id;
+            String title = p.getFavorite_series().get(0);
+            id = tmdb.searchTV(title, 0, "de", null, SearchType.PHRASE).getResults().get(0).getId();
+            similarTVs = tmdb.getTVSimilar(id, 0, "de").getResults();
+            for (int i = 1; i < p.getFavorite_series().size(); i++) {
+                title = p.getFavorite_series().get(i);
+                id = tmdb.searchTV(title, 0, "de", null, SearchType.PHRASE).getResults().get(0).getId();
+                similarTVs.addAll(tmdb.getTVSimilar(id, 0, "de").getResults());
+            }
         }
     }
     private String getGenresTV() throws MovieDbException {
