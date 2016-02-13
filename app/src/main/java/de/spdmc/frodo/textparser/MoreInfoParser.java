@@ -6,6 +6,7 @@ public class MoreInfoParser extends Parser {
 
     @Override
     public InputContent parse(String in) {
+        in = normalize(in);
         InputContent ic = new InputContent();
         if(in.contains("mehr") || in.contains("weitere") || in.contains("inhalt") || in.contains("beschreib") || in.contains("zusammenfass")
                 || in.startsWith("was") || in.contains("worum")){
