@@ -22,7 +22,7 @@ public class QuestionParser extends Parser {
         String[] inArr = in.split(" ");
 
         if(((in.contains("heiss") || in.contains("heiß")) && in.contains("ich"))
-                || (in.contains("mein") && in.contains("name"))){
+                || ((in.contains("mein") || in.contains("was fuer") || in.contains("was für")) && in.contains("name"))) {
             if(p.getName() != null) {
                 ic.addData(p.getName());
                 ic.setDialogState(Enumerations.DialogState.QUESTION_REPLY_NAME);
