@@ -20,6 +20,7 @@ import de.spdmc.frodo.profile.ProfileWriter;
 import de.spdmc.frodo.textparser.ActorParser;
 import de.spdmc.frodo.textparser.FavoriteTypeParser;
 import de.spdmc.frodo.textparser.GenreParser;
+import de.spdmc.frodo.textparser.GoodRecommendationParser;
 import de.spdmc.frodo.textparser.GreetingsParser;
 import de.spdmc.frodo.textparser.InputContent;
 import de.spdmc.frodo.textparser.MoreInfoParser;
@@ -94,6 +95,7 @@ public class Bot {
         QuestionParser questionParser = new QuestionParser(p);
         NextRecommendationParser nextRecommendationParser = new NextRecommendationParser();
         MoreInfoParser moreInfoParser = new MoreInfoParser();
+        GoodRecommendationParser goodRecommendationParser = new GoodRecommendationParser();
 
         InputContent ic = new InputContent(); // InputContent der mit jeweiligem geparsten Inhalt gefuellt wird
 
@@ -203,6 +205,7 @@ public class Bot {
                     else {
                         ic = moreInfoParser.parse(s);
                         if(ic.getDialogState() == null) ic = nextRecommendationParser.parse(s);
+                        if(ic.getDialogState() == null) ic = goodRecommendationParser.parse(s);
                     }
                     currentState = ic.getDialogState();
                     if(currentState == null) currentState = Enumerations.DialogState.NEXT_RECOMMENDATION_FAULT;
@@ -275,7 +278,7 @@ public class Bot {
                             "Alles klar, wer mag keine "
                     }) + type +
                             speakRandomly(new String[]{
-                                    "... Gibt es ein Genre, indem ich für dich suchen soll?",
+                                    "... Gibt es ein Genre, in dem ich für dich suchen soll?",
                                     "... Dann fahren wir fort. Gibt es ein Genre?",
                                     "... Genre?"
                             });
@@ -292,7 +295,6 @@ public class Bot {
                             "Du magst also " + name
                     }) + speakRandomly(new String[]{
                             ". Hast du eine/n LieblingsschauspielerIn?",
-                            ". Gibt es eine/n SchauspielerIn, den du besonders toll findest?",
                             ". Darf es auch ein/e bestimmte/r SchauspielerIn sein?"
                     });
                     p.setFavorite_genre(ic.getData().get(0));
@@ -532,6 +534,7 @@ public class Bot {
                             reply += con.getInfo() + ".";
                         } catch (Exception e) {
                             e.printStackTrace();
+                            reply = "Oops, da gab es wohl gerade ein Problem...";
                         }
                         currentState = Enumerations.DialogState.PARSE_RECOMMENDATION_REACTION;
                     }
@@ -559,7 +562,9 @@ public class Bot {
                     currentState = Enumerations.DialogState.PARSE_RECOMMENDATION_REACTION;
                     break;
                 case GOODBYE:
-                    reply = "Ich hoffe ich konnte dir weiterhelfen! Bis zum nächsten mal.";
+                    if(p.getName() != null)
+                        reply = "Ich hoffe ich konnte dir weiterhelfen, " + p.getName() + "! Bis zum nächsten mal.";
+                    else reply = "Ich hoffe ich konnte dir weiterhelfen! Bis zum nächsten mal.";
                     break;
                 //TODO
                 // Alternative Verabschiedung, wenn nicht nach Serien oder Filmen gesucht werden soll
