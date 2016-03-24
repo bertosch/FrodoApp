@@ -90,6 +90,7 @@ public class Connection {
         }
         return info;
     }
+
     //Kurzbeschreibung
     public String getOverview() throws MovieDbException {
         if (favorite_type.equals("serie")){
@@ -98,6 +99,27 @@ public class Connection {
             return movieinfo.getOverview();
         }
     }
+
+    // cast Liste ist immer leer
+    /*public ArrayList<String> getActors(){
+        if (favorite_type.equals("serie")){
+            return null; //TODO Schauspieler fuer Serien
+        }else{
+            ArrayList<String> actors = new ArrayList<>();
+            try {
+                MovieInfo m = tmdb.getMovieInfo(resultMovie.get(0).getId(), null);
+                List<MediaCreditCast> cast = m.getCast();
+                List<MediaCreditCrew> crew = m.getCrew();
+            } catch (MovieDbException e) {
+                e.printStackTrace();
+            }
+            for(MediaCreditCast mcc : movieinfo.getCast()) {
+                actors.add(mcc.getName());
+            }
+            return actors;
+        }
+    }*/
+
     public String getTitle(){
         if (favorite_type.equals("serie")){
             return resultTV.get(0).getName();
@@ -105,6 +127,7 @@ public class Connection {
             return resultMovie.get(0).getTitle();
         }
     }
+
     private void discoverTV(Discover discover) throws Exception {
         resultTV = tmdb.getDiscoverTV(discover).getResults();
         similarTVs();
