@@ -65,7 +65,6 @@ public class MoviesParser extends Parser {
             if(ic.getData().isEmpty()){
                 s = in;
                 for (int i = 0; i < inArr.length; i++){
-                    // TODO de als language
                     ResultList<MovieInfo> result = Bot.tmdbSearch.searchMovie(s, 0, "de", false, null, null, null);
                     if(result.isEmpty()){
                         s = "";
