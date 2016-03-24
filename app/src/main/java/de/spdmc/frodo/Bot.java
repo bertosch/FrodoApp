@@ -150,7 +150,6 @@ public class Bot {
                     if (ic.getDialogState() != null) savedState = currentState;
                     else ic = genreParser.parse(s, true);
                     if (ic.getDialogState() == null) ic = recommendationParser.parse(s);
-                    // TODO andere Parser laufen lassen
                     currentState = ic.getDialogState();
                     if(currentState == null) currentState = Enumerations.DialogState.GENRE_FAULT_REPLY;
                     break;
@@ -160,7 +159,6 @@ public class Bot {
                     else ic = actorParser.parse(s);
                     if (ic.getDialogState() == null) ic = recommendationParser.parse(s);
                     currentState = ic.getDialogState();
-                    // TODO andere Parser laufen lassen
                     if(currentState == null) currentState = Enumerations.DialogState.FAVORITE_ACTOR_FAULT_REPLY;
                     break;
                 case PARSE_FAVORITE_MOVIE:
@@ -169,7 +167,6 @@ public class Bot {
                     else ic = moviesParser.parse(s);
                     if (ic.getDialogState() == null) ic = recommendationParser.parse(s);
                     currentState = ic.getDialogState();
-                    // TODO andere Parser laufen lassen
                     if(currentState == null) currentState = Enumerations.DialogState.FAVORITE_MOVIES_REASK_FAULT;
                     break;
                 case PARSE_FAVORITE_MOVIE_YES_NO:
@@ -185,7 +182,6 @@ public class Bot {
                     else ic = tvShowParser.parse(s);
                     if (ic.getDialogState() == null) ic = recommendationParser.parse(s);
                     currentState = ic.getDialogState();
-                    // TODO andere Parser laufen lassen
                     if(currentState == null) currentState = Enumerations.DialogState.FAVORITE_TVSHOW_REASK_FAULT;
                     break;
                 case PARSE_FAVORITE_TVSHOW_YES_NO:
@@ -248,16 +244,46 @@ public class Bot {
                     currentState = Enumerations.DialogState.PARSE_NAME;
                     break;
                 case NAME_DECLINED:
-                    reply = speakRandomly(new String[]{
-                            "Okay, schade! ",
-                            "Soso, dann ohne Namen ;)! ?",
-                            "Schade, ich hätte gern deinen Namen erfahren. "
 
-                    }) + speakRandomly(new String[]{
-                            "Bist du auf der Suche nach Filmen oder Serien ? ",
-                            "Was suchen wir für dich, einen Film oder eine Serie",
-                            "Wie gehts weiter, Film oder Serie?"
+                    boolean isKevin = false;
+
+                    String reply1 = speakRandomly(new String[]{
+                            "Okay, schade! ",
+                            "Soso, dann ohne Namen. ",
+                            "Schade, ich hätte gerne deinen Namen erfahren. ",
+
+                            "Dann nennen wir dich ab jetzt Kevin.\n",
+                            "Ok, also Kevin.\n"
+
                     });
+
+                    if(reply1.contains("Kevin")) isKevin = true;
+
+                    if(!isKevin)
+                    {
+                        String replyNoKevin = speakRandomly(new String[]{
+                            "Bist du auf der Suche nach Filmen oder Serien? ",
+                            "Was suchen wir für dich, einen Film oder eine Serie?",
+                            "Wie gehts weiter, Film oder Serie?",
+                            "Soll ich dir einen Film oder eine Serie empfehlen?"
+                        });
+
+                        reply = reply1 + replyNoKevin;
+                    }
+                    else
+                    {
+                        p.setName("Kevin");
+
+                        String replyIsKevin = speakRandomly(new String[]{
+                                "Bist du auf der Suche nach Filmen oder Serien,  ",
+                                "Was suchen wir für dich, einen Film oder eine Serie, ",
+                                "Wie gehts weiter, Film oder Serie, ",
+                                "Soll ich dir einen Film oder eine Serie empfehlen, "
+                        });
+
+                        reply = reply1 + replyIsKevin + p.getName() + " ?";
+                    }
+
                     currentState = Enumerations.DialogState.PARSE_FAVORITE_TYPE;
                     break;
                 case FAVORITE_TYPE_REASK:
@@ -265,8 +291,10 @@ public class Bot {
                     currentState = Enumerations.DialogState.PARSE_FAVORITE_TYPE;
                     break;
                 case NAME_WITHDRAW:
-                    reply = "Entschuldigung, dann habe ich das falsch "
-                            + "verstanden! Wie ist denn dein Name?";
+                    reply = speakRandomly(new String[]{
+                            "Entschuldigung, dann habe ich das falsch verstanden! Wie ist denn dein Name?",
+                            "Mein Fehler! Wie lautet dein Name?"
+                    });
                     p.setName(null);
                     writeProfile();
                     currentState = Enumerations.DialogState.PARSE_NAME;
@@ -278,7 +306,8 @@ public class Bot {
                     reply = speakRandomly(new String[]{
                             "Okay, du magst also ",
                             "Super, ich mag auch ",
-                            "Alles klar, wer mag keine "
+                            "Alles klar, wer mag keine ",
+
                     }) + type +
                             speakRandomly(new String[]{
                                     "... Gibt es ein Genre, in dem ich für dich suchen soll?",
@@ -298,7 +327,8 @@ public class Bot {
                             "Du magst also " + name
                     }) + speakRandomly(new String[]{
                             ". Hast du eine/n LieblingsschauspielerIn?",
-                            ". Darf es auch ein/e bestimmte/r SchauspielerIn sein?"
+                            ". Darf es auch ein/e bestimmte/r SchauspielerIn sein?",
+                            ". Welche/n SchauspielerIn magst du am liebsten?"
                     });
                     p.setFavorite_genre(ic.getData().get(0));
                     p.setFavorite_genre_id(ic.getData().get(1));
@@ -308,17 +338,20 @@ public class Bot {
                 case GENRE_FAULT_REPLY:
                     reply = speakRandomly(new String[]{
                             "Das habe ich leider nicht verstanden. ",
-                            "Oops, damit kann ich nichts anfangen! "
+                            "Oops, damit kann ich nichts anfangen! ",
+                            "Das Genre kenne ich nicht! "
                     }) + speakRandomly(new String[]{
                             "Hast du ein Genre, das du besonders magst?",
-                            "Gib mir bitte ein Genre, auf das du gerade Bock hast!"
+                            "Gib mir bitte ein Genre, auf das du gerade Bock hast!",
+                            "Welches ist dein Lieblingsgenre? "
                     });
                     currentState = Enumerations.DialogState.PARSE_GENRE;
                     break;
                 case FAVORITE_TYPE_FAULT_REPLY:
                     reply = speakRandomly(new String[]{
                             "Das habe ich leider nicht verstanden. ",
-                            "Oops, damit kann ich nichts anfangen! "
+                            "Oops, damit kann ich nichts anfangen! ",
+                            "Das ist keine mögliche Antwort! "
                     }) + speakRandomly(new String[]{
                             "Bist du auf der Suche nach Filmen oder Serien?",
                             "Film oder Serie?",
@@ -369,7 +402,10 @@ public class Bot {
                         currentState = Enumerations.DialogState.PARSE_FAVORITE_MOVIE;
                     }
                     else {
-                        reply += " Hast du eine Lieblingsserie?";
+                        reply += speakRandomly(new String[]{
+                                " Hast du eine Lieblingsserie?",
+                                " Welche Serie hat dir besonders gut gefallen?"
+                        });
                         currentState = Enumerations.DialogState.PARSE_FAVORITE_TVSHOW;
                     }
                     break;
@@ -400,12 +436,20 @@ public class Bot {
                     currentState = Enumerations.DialogState.PARSE_FAVORITE_MOVIE;
                     break;
                 case FAVORITE_MOVIES_DECLINED:
-                    reply = "Okay. Soll ich dir anhand der gesammelten Informationen Vorschläge machen?";
+                    reply = speakRandomly(new String[]{
+                            "Okay. Soll ich dir anhand der gesammelten Informationen Vorschläge machen?",
+                            "Möchtest du jetzt einen Vorschlag von mir haben?",
+                            "Ich hätte da was für dich, möchtest du es wissen?"
+                    });
                     savedIc = ic;
                     currentState = Enumerations.DialogState.PARSE_RECOMMENDATION_YES_NO;
                     break;
                 case FAVORITE_MOVIES_ASK_MORE:
-                    reply = "Hast du noch weitere Lieblingsfilme?";
+                    reply = speakRandomly(new String[]{
+                            "Hast du noch weitere Lieblingsfilme?",
+                            "Gibt es noch andere Filme, die dir gefallen haben?",
+                            "Hat dich noch ein Film besonders angesprochen?"
+                    });
                     p.addFavorite_movie(ic.getData().get(0));
                     p.addWatched_movie(ic.getData().get(0));
                     writeProfile();
@@ -426,12 +470,20 @@ public class Bot {
                     currentState = Enumerations.DialogState.PARSE_FAVORITE_TVSHOW;
                     break;
                 case FAVORITE_TVSHOW_DECLINED:
-                    reply = "Okay. Soll ich dir anhand der gesammelten Informationen Vorschläge machen?";
+                    reply = speakRandomly(new String[]{
+                            "Okay. Soll ich dir anhand der gesammelten Informationen Vorschläge machen?",
+                            "Möchtest du jetzt einen Vorschlag von mir haben?",
+                            "Ich hätte da was für dich, möchtest du es wissen?"
+                    });
                     savedIc = ic;
                     currentState = Enumerations.DialogState.PARSE_RECOMMENDATION_YES_NO;
                     break;
                 case FAVORITE_TVSHOW_ASK_MORE:
-                    reply = "Hast du noch weitere Lieblingsserien?";
+                    reply = speakRandomly(new String[]{
+                            "Hast du noch weitere Lieblingsserien?",
+                            "Gibt es noch andere Serien, die dir gefallen haben?",
+                            "Hat dich noch eine Serie besonders angesprochen?"
+                    });
                     p.addFavorite_serie(ic.getData().get(0));
                     p.addWatched_serie(ic.getData().get(0));
                     writeProfile();
