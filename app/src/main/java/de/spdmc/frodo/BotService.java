@@ -68,6 +68,11 @@ public class BotService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         String action = intent.getAction();
 
         if (action.equalsIgnoreCase(ACTION_QUESTION)) {
