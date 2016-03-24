@@ -6,16 +6,17 @@
     <LinearLayout
         android:id="@+id/singleMessageLin"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp">
 
         <TextView
             android:id="@+id/singleMessage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:background="@drawable/txtview"
+            android:background="@drawable/txtview_right"
             android:text="Beispieltext"
-            android:textColor="@android:color/primary_text_light" />
+            android:textColor="@android:color/primary_text_light"/>
     </LinearLayout>
 
 </LinearLayout>

@@ -39,8 +39,7 @@ public class MoviesParser extends Parser {
             MovieInfo bestRated = new MovieInfo();
             bestRated.setVoteAverage(0.0f);
             for (int i = inArr.length-1; i >= 0; i--){
-                // TODO de als language
-                ResultList<MovieInfo> result = Bot.tmdbSearch.searchMovie(s, 0, null, false, null, null, null);
+                ResultList<MovieInfo> result = Bot.tmdbSearch.searchMovie(s, 0, "de", false, null, null, null);
                 if(result.isEmpty()){
                     s = "";
                     for(int j = 0; j < i; j++){
@@ -66,8 +65,7 @@ public class MoviesParser extends Parser {
             if(ic.getData().isEmpty()){
                 s = in;
                 for (int i = 0; i < inArr.length; i++){
-                    // TODO de als language
-                    ResultList<MovieInfo> result = Bot.tmdbSearch.searchMovie(s, 0, null, false, null, null, null);
+                    ResultList<MovieInfo> result = Bot.tmdbSearch.searchMovie(s, 0, "de", false, null, null, null);
                     if(result.isEmpty()){
                         s = "";
                         for(int j = inArr.length-1; j > i; j--){

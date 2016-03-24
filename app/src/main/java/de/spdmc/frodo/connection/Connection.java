@@ -73,15 +73,16 @@ public class Connection {
         this.favorite_type = p.getFavorite_type();
         if (favorite_type.equals("serie")) {
             discoverTV(discover);
-            pickedMovie = getRandomMovie();
+            pickedTV = getRandomTV();
         } else {
             discoverMovie(discover);
-            pickedTV = getRandomTV();
+            pickedMovie = getRandomMovie();
         }
     }
 
     private void discoverTV(Discover discover) throws Exception {
         rawResultTV = tmdb.getDiscoverTV(discover).getResults();
+        ratedResultTV = new ArrayList<>(rawResultTV);
         similarTVs();
         for (int i = 0; i < rawResultTV.size(); i++) {
             //Alle schon geguckten Serien loeschen
@@ -93,8 +94,6 @@ public class Connection {
                     if (similarTV.getName().equals(rawResultTV.get(i).getName())) {
 
                         TVBasic move = rawResultTV.get(i);
-
-                        ratedResultTV = new ArrayList<>(rawResultTV);
 
                         //Chance gezogen zu werden erhöhen
                         ratedResultTV.add(move);
@@ -109,6 +108,7 @@ public class Connection {
     }
     private void discoverMovie(Discover discover) throws Exception {
         rawResultMovie = tmdb.getDiscoverMovies(discover).getResults();
+        ratedResultMovie = new ArrayList<>(rawResultMovie);
         similarMovies();
         for (int i=0; i< rawResultMovie.size();i++) {
             //Alle schon geguckten Filme loeschen
@@ -122,14 +122,9 @@ public class Connection {
 
                         MovieBasic move = rawResultMovie.get(i);
 
-                        ratedResultMovie = new ArrayList<>(rawResultMovie);
-
                         //Chance gezogen zu werden erhöhen
                         ratedResultMovie.add(move);
                         ratedResultMovie.add(move);
-
-                        /*rawResultMovie.remove(i);
-                        rawResultMovie.add(0, move);*/
                     }
                 }
 

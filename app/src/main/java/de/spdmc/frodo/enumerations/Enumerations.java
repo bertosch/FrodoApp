@@ -61,6 +61,7 @@ public class Enumerations {
         NEXT_RECOMMENDATION,
         NEXT_RECOMMENDATION_FAULT,
         MORE_INFO,
+        WHICH_ACTORS,
         PARSE_FAVORITE_MOVIE
     }
 

@@ -17,6 +17,7 @@ import de.spdmc.frodo.enumerations.Enumerations;
 import de.spdmc.frodo.profile.Profile;
 import de.spdmc.frodo.profile.ProfileReader;
 import de.spdmc.frodo.profile.ProfileWriter;
+import de.spdmc.frodo.textparser.ActorInfoParser;
 import de.spdmc.frodo.textparser.ActorParser;
 import de.spdmc.frodo.textparser.FavoriteTypeParser;
 import de.spdmc.frodo.textparser.GenreParser;
@@ -96,6 +97,7 @@ public class Bot {
         NextRecommendationParser nextRecommendationParser = new NextRecommendationParser();
         MoreInfoParser moreInfoParser = new MoreInfoParser();
         GoodRecommendationParser goodRecommendationParser = new GoodRecommendationParser();
+        ActorInfoParser actorInfoParser = new ActorInfoParser();
 
         InputContent ic = new InputContent(); // InputContent der mit jeweiligem geparsten Inhalt gefuellt wird
 
@@ -200,6 +202,7 @@ public class Bot {
                     if (ic.getDialogState() != null) savedState = currentState;
                     else {
                         ic = moreInfoParser.parse(s);
+//                        if(ic.getDialogState() == null) ic = actorInfoParser.parse(s);
                         if(ic.getDialogState() == null) ic = nextRecommendationParser.parse(s);
                         if(ic.getDialogState() == null) ic = goodRecommendationParser.parse(s);
                     }
@@ -393,8 +396,8 @@ public class Bot {
                     writeProfile();
                     if(p.getFavorite_type().equals("film")){
                         reply += speakRandomly(new String[]{
-                                ". Hast du auch einen Lieblingsfilm?",
-                                ", gibt es denn einen Film, den du besonders toll fandest?"
+                                " Hast du auch einen Lieblingsfilm?",
+                                " gibt es denn einen Film, den du besonders toll fandest?"
                         });
                         currentState = Enumerations.DialogState.PARSE_FAVORITE_MOVIE;
                     }
@@ -613,6 +616,13 @@ public class Bot {
                     }
                     currentState = Enumerations.DialogState.PARSE_RECOMMENDATION_REACTION;
                     break;
+                /*case WHICH_ACTORS:
+                    reply = "";
+                    for (String n : con.getActors()){
+                        reply += n + ", ";
+                    }
+                    currentState = Enumerations.DialogState.PARSE_RECOMMENDATION_REACTION;
+                    break;*/
                 case GOODBYE:
                     if(p.getName() != null)
                         reply = "Ich hoffe ich konnte dir weiterhelfen, " + p.getName() + "! Bis zum nächsten mal.";
@@ -628,8 +638,8 @@ public class Bot {
                     break;
             }
         }
-        String[] splittetReply = reply.split("[.!]");
-        savedReply = splittetReply[splittetReply.length-1];
+        String[] splitReply = reply.split("[.!]");
+        savedReply = splitReply[splitReply.length-1];
         if (savedReply.charAt(0) != ' ') savedReply = " " + savedReply;
         return reply;
     }

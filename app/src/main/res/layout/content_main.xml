@@ -23,13 +23,13 @@
         android:divider="@null"
         android:stackFromBottom="true"
         android:transcriptMode="alwaysScroll"
-        android:background="@android:color/transparent"
-        android:backgroundTint="#3f51b5" />
+        android:background="@android:color/transparent" />
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="40dp"
         android:orientation="horizontal"
+        android:layout_marginTop="20dp"
         android:weightSum="3">
 
         <EditText
@@ -44,8 +44,9 @@
             android:layout_width="0dp"
             android:layout_height="fill_parent"
             android:layout_weight="1"
+            android:textColor="#ffffff"
             android:text="Send"
-            android:background="#303f9f" />
+            android:background="@color/colorSendButton" />
 
     </LinearLayout>
 </LinearLayout>
