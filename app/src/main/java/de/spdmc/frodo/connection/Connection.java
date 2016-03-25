@@ -16,6 +16,7 @@ import com.omertron.themoviedbapi.results.ResultList;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 import de.spdmc.frodo.Bot;
 import de.spdmc.frodo.profile.Profile;
@@ -23,8 +24,13 @@ import de.spdmc.frodo.profile.Profile;
 public class Connection {
     private TheMovieDbApi tmdb;
     private int page = 1;
-    private List<MovieBasic> resultMovie;
-    private List<TVBasic> resultTV;
+    private List<MovieBasic> rawResultMovie;
+    private List<MovieBasic> ratedResultMovie;
+    private List<TVBasic> rawResultTV;
+    private List<TVBasic> ratedResultTV;
+    private MovieBasic pickedMovie;
+    private TVBasic pickedTV;
+    private Random randomizer = new Random();
     private List<MovieInfo> similarMovies = new ArrayList<>();
     private List<TVInfo> similarTVs = new ArrayList<>();
     private String favorite_type;
@@ -32,10 +38,25 @@ public class Connection {
     private TVInfo tvinfo;
     private MovieInfo movieinfo;
 
+    //Schauspieler-ID holen
+    private String peopleToID(String actorID)  {
+        String ID="";
+        try {
+            ResultList<PersonFind> persons = tmdb.searchPeople(actorID,null,null, SearchType.PHRASE);
+            ID = String.valueOf(persons.getResults().get(0).getId());
+        } catch (MovieDbException e) {
+            e.printStackTrace();
+        }
+        return ID;
+    }
+
+
     public Connection(Profile p) throws Exception {
         tmdb = new TheMovieDbApi(Bot.apiKey, Bot.httpClient);
         this.p = p;
     }
+
+
 
     public void discover() throws Exception {
         Discover discover = new Discover();
@@ -52,132 +73,99 @@ public class Connection {
         this.favorite_type = p.getFavorite_type();
         if (favorite_type.equals("serie")) {
             discoverTV(discover);
+            pickedTV = getRandomTV();
         } else {
             discoverMovie(discover);
-        }
-    }
-
-    //Falls Titel nicht gewollt/bereits geguckt etc, naechsten Titel ausgeben, evtl naechste Seite aus der API holen
-    public void setNext() throws Exception {
-        if (favorite_type.equals("serie")){
-            resultTV.remove(0);
-            if (resultTV.isEmpty()){
-                page++;
-                discover();
-            }
-        }else{
-            resultMovie.remove(0);
-            if (resultMovie.isEmpty()){
-                page++;
-                discover();
-            }
-        }
-    }
-
-    public String getInfo() throws MovieDbException {
-        String info = null;
-        if (favorite_type.equals("serie")){
-            if (!resultTV.isEmpty()){
-                System.out.println(resultTV.size());
-                tvinfo = tmdb.getTVInfo(resultTV.get(0).getId(),"de");
-                info = getTitle() + " (Release: " + getFirstAirDate() + "; " + "Genres:" + getGenresTV() + "; " +"Episodendauer:" + getRuntimeTV() + "; " + "Episodenanzahl:" + getNumberOfEpisodes() + ")";
-            }
-        }else {
-            if (!resultMovie.isEmpty()) {
-                movieinfo = tmdb.getMovieInfo(resultMovie.get(0).getId(), "de");
-                info = getTitle() + " (Release: " + getReleaseDate() + "; " + "Genres: " + getGenresMovie() + "; " + "Dauer: " + getRuntimeMovie() + " min)";
-            }
-        }
-        return info;
-    }
-
-    //Kurzbeschreibung
-    public String getOverview() throws MovieDbException {
-        if (favorite_type.equals("serie")){
-            return tvinfo.getOverview();
-        }else{
-            return movieinfo.getOverview();
-        }
-    }
-
-    // cast Liste ist immer leer
-    /*public ArrayList<String> getActors(){
-        if (favorite_type.equals("serie")){
-            return null; //TODO Schauspieler fuer Serien
-        }else{
-            ArrayList<String> actors = new ArrayList<>();
-            try {
-                MovieInfo m = tmdb.getMovieInfo(resultMovie.get(0).getId(), null);
-                List<MediaCreditCast> cast = m.getCast();
-                List<MediaCreditCrew> crew = m.getCrew();
-            } catch (MovieDbException e) {
-                e.printStackTrace();
-            }
-            for(MediaCreditCast mcc : movieinfo.getCast()) {
-                actors.add(mcc.getName());
-            }
-            return actors;
-        }
-    }*/
-
-    public String getTitle(){
-        if (favorite_type.equals("serie")){
-            return resultTV.get(0).getName();
-        }else{
-            return resultMovie.get(0).getTitle();
+            pickedMovie = getRandomMovie();
         }
     }
 
     private void discoverTV(Discover discover) throws Exception {
-        resultTV = tmdb.getDiscoverTV(discover).getResults();
+        rawResultTV = tmdb.getDiscoverTV(discover).getResults();
+        ratedResultTV = new ArrayList<>(rawResultTV);
         similarTVs();
-        for (int i = 0; i < resultTV.size(); i++) {
+        for (int i = 0; i < rawResultTV.size(); i++) {
             //Alle schon geguckten Serien loeschen
-            if (p.getWatched_series().contains(resultTV.get(i).getName())) {
-                resultTV.remove(i);
+            if (p.getWatched_series().contains(rawResultTV.get(i).getName())) {
+                rawResultTV.remove(i);
             } else {
-                //Schnittmenge von similarTVs und resultTV nach vorne bringen
+                //Schnittmenge von similarTVs und rawResultTV nach vorne bringen
                 for (TVInfo similarTV : similarTVs) {
-                    if (similarTV.getName().equals(resultTV.get(i).getName())) {
-                        TVBasic move = resultTV.get(i);
-                        resultTV.remove(i);
-                        resultTV.add(0, move);
+                    if (similarTV.getName().equals(rawResultTV.get(i).getName())) {
+
+                        TVBasic move = rawResultTV.get(i);
+
+                        //Chance gezogen zu werden erhöhen
+                        ratedResultTV.add(move);
+                        ratedResultTV.add(move);
+
+                        /*rawResultTV.remove(i);
+                        rawResultTV.add(0, move);*/
                     }
                 }
             }
         }
     }
     private void discoverMovie(Discover discover) throws Exception {
-        resultMovie = tmdb.getDiscoverMovies(discover).getResults();
+        rawResultMovie = tmdb.getDiscoverMovies(discover).getResults();
+        ratedResultMovie = new ArrayList<>(rawResultMovie);
         similarMovies();
-        for (int i=0; i<resultMovie.size();i++) {
+        for (int i=0; i< rawResultMovie.size();i++) {
             //Alle schon geguckten Filme loeschen
-            if (p.getWatched_movies().contains(resultMovie.get(i).getTitle())){
-                resultMovie.remove(i);
+            if (p.getWatched_movies().contains(rawResultMovie.get(i).getTitle())){
+                rawResultMovie.remove(i);
                 i--;
             }else{
-                //Schnittmenge von similarMovies und resultMovie nach vorne bringen
+                //Schnittmenge von similarMovies und rawResultMovie nach vorne bringen
                 for (MovieInfo similarMovy : similarMovies) {
-                    if (similarMovy.getTitle().equals(resultMovie.get(i).getTitle())) {
-                        MovieBasic move = resultMovie.get(i);
-                        resultMovie.remove(i);
-                        resultMovie.add(0, move);
+                    if (similarMovy.getTitle().equals(rawResultMovie.get(i).getTitle())) {
+
+                        MovieBasic move = rawResultMovie.get(i);
+
+                        //Chance gezogen zu werden erhöhen
+                        ratedResultMovie.add(move);
+                        ratedResultMovie.add(move);
                     }
                 }
+
             }
         }
     }
-    //Schauspieler-ID holen
-    private String peopleToID(String actorID)  {
-        String ID="";
-        try {
-            ResultList<PersonFind> persons = tmdb.searchPeople(actorID,null,null, SearchType.PHRASE);
-            ID = String.valueOf(persons.getResults().get(0).getId());
-        } catch (MovieDbException e) {
-            e.printStackTrace();
-        }
-        return ID;
+
+    private MovieBasic getRandomMovie()
+    {
+        return ratedResultMovie.get(randomizer.nextInt(ratedResultMovie.size()));
     }
+
+    private TVBasic getRandomTV()
+    {
+        return ratedResultTV.get(randomizer.nextInt(ratedResultTV.size()));
+    }
+
+
+
+
+    //Falls Titel nicht gewollt/bereits geguckt etc, naechsten Titel ausgeben, evtl naechste Seite aus der API holen
+    public void setNext() throws Exception {
+        if (favorite_type.equals("serie")){
+            while(ratedResultTV.contains(pickedTV)) {
+                ratedResultTV.remove(pickedTV);
+            }
+            if (ratedResultTV.isEmpty()){
+                page++;
+                discover();
+            }
+        }else{
+            while(ratedResultMovie.contains(pickedMovie)) {
+                ratedResultMovie.remove(pickedMovie);
+            }
+            if (ratedResultMovie.isEmpty()){
+                page++;
+                discover();
+            }
+        }
+    }
+
     //aehnliche Filme von den Lieblingsfilmen holen
     private void similarMovies() throws MovieDbException {
         if(!p.getFavorite_movies().isEmpty()) {
@@ -206,6 +194,44 @@ public class Connection {
             }
         }
     }
+
+
+    public String getInfo() throws MovieDbException {
+        String info = null;
+        if (favorite_type.equals("serie")){
+            if (!rawResultTV.isEmpty()){
+                System.out.println(rawResultTV.size());
+                tvinfo = tmdb.getTVInfo(pickedTV.getId(),"de");
+                info = getTitle() + " (Release: " + getFirstAirDate() + "; " + "Genres:" + getGenresTV() + "; " +"Episodendauer:" + getRuntimeTV() + "; " + "Episodenanzahl:" + getNumberOfEpisodes() + ")";
+            }
+        }else {
+            if (!rawResultMovie.isEmpty()) {
+                movieinfo = tmdb.getMovieInfo(pickedMovie.getId(), "de");
+                info = getTitle() + " (Release: " + getReleaseDate() + "; " + "Genres: " + getGenresMovie() + "; " + "Dauer: " + getRuntimeMovie() + " min)";
+            }
+        }
+        return info;
+    }
+
+    public String getTitle(){
+        if (favorite_type.equals("serie")){
+            return pickedTV.getName();
+
+        }else{
+            return pickedMovie.getTitle();
+        }
+    }
+
+
+
+    public String getOverview() throws MovieDbException {
+        if (favorite_type.equals("serie")){
+            return tvinfo.getOverview();
+        }else{
+            return movieinfo.getOverview();
+        }
+    }
+
     private String getGenresTV() throws MovieDbException {
         List<Genre> c;
         c = tvinfo.getGenres();
@@ -233,6 +259,8 @@ public class Connection {
         genres += "]";
         return genres;
     }
+
+
     private String getRuntimeTV() throws MovieDbException {
         List<Integer> l = tvinfo.getEpisodeRunTime();
         String s;
@@ -247,15 +275,19 @@ public class Connection {
         }
         return s;
     }
+
     private String getRuntimeMovie() throws MovieDbException {
         return Integer.toString(movieinfo.getRuntime());
     }
+
+    private String getReleaseDate() throws MovieDbException {
+        return movieinfo.getReleaseDate();
+    }
+
     private String getFirstAirDate()throws MovieDbException{
         return tvinfo.getFirstAirDate();
     }
-    private String getReleaseDate() throws MovieDbException {
-            return resultMovie.get(0).getReleaseDate();
-    }
+
     private int getNumberOfEpisodes() throws MovieDbException {
         return tvinfo.getNumberOfEpisodes();
     }
