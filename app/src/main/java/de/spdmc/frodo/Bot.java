@@ -33,6 +33,7 @@ import de.spdmc.frodo.textparser.QueryParser;
 import de.spdmc.frodo.textparser.QuestionParser;
 import de.spdmc.frodo.textparser.RecommendationParser;
 import de.spdmc.frodo.textparser.TvShowParser;
+import de.spdmc.frodo.textparser.UseProfileParser;
 import de.spdmc.frodo.textparser.YesNoParser;
 
 public class Bot {
@@ -62,11 +63,13 @@ public class Bot {
         }
     }
 
-    public static void readSavedProfile(){
+    public static boolean readSavedProfile(){
         try {
             p = reader.read();
+            return true;
         } catch (Exception e) {
             Log.e(TAG, "Noch kein gespeichertes Profil vorhanden");
+            return false;
         }
     }
 
@@ -98,6 +101,7 @@ public class Bot {
         MoreInfoParser moreInfoParser = new MoreInfoParser();
         GoodRecommendationParser goodRecommendationParser = new GoodRecommendationParser();
         ActorInfoParser actorInfoParser = new ActorInfoParser();
+        UseProfileParser useProfileParser = new UseProfileParser(p);
 
         InputContent ic = new InputContent(); // InputContent der mit jeweiligem geparsten Inhalt gefuellt wird
 
@@ -177,7 +181,7 @@ public class Bot {
                     currentState = ic.getDialogState();
                     break;
                 case PARSE_FAVORITE_TVSHOW:
-                    ic = parseQuestion(s,questionParser);
+                    ic = parseQuestion(s, questionParser);
                     if (ic.getDialogState() != null) savedState = currentState;
                     else ic = tvShowParser.parse(s);
                     if (ic.getDialogState() == null) ic = recommendationParser.parse(s);
@@ -208,6 +212,10 @@ public class Bot {
                     }
                     currentState = ic.getDialogState();
                     if(currentState == null) currentState = Enumerations.DialogState.NEXT_RECOMMENDATION_FAULT;
+                    break;
+                case PARSE_USE_SAVED_PROFILE:
+                    ic = useProfileParser.parse(s);
+                    currentState = ic.getDialogState();
                     break;
                 case GREETING_REPLY:
                     reply = speakRandomlyAppend(greetingsParser.getPattern(), ", wie ist dein Name?");
