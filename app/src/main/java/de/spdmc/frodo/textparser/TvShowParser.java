@@ -37,8 +37,7 @@ public class TvShowParser extends Parser {
             TVBasic bestRated = new TVBasic();
             bestRated.setVoteAverage(0.0f);
             for (int i = inArr.length-1; i >= 0; i--){
-                // TODO de als language
-                ResultList<TVBasic> result = Bot.tmdbSearch.searchTV(s, 0, null, null, null);
+                ResultList<TVBasic> result = Bot.tmdbSearch.searchTV(s, 0, "de", null, null);
                 if(result.isEmpty()){
                     s = "";
                     for(int j = 0; j < i; j++){
@@ -64,8 +63,7 @@ public class TvShowParser extends Parser {
             if(ic.getData().isEmpty()){
                 s = in;
                 for (int i = 0; i < inArr.length; i++){
-                    // TODO de als language
-                    ResultList<TVBasic> result = Bot.tmdbSearch.searchTV(s, 0, null, null, null);
+                    ResultList<TVBasic> result = Bot.tmdbSearch.searchTV(s, 0, "de", null, null);
                     if(result.isEmpty()){
                         s = "";
                         for(int j = inArr.length-1; j > i; j--){

@@ -63,7 +63,7 @@ public class Enumerations {
         MORE_INFO,
         WHICH_ACTORS,
         PARSE_USE_SAVED_PROFILE,
-        PARSE_FAVORITE_MOVIE
+        USE_SAVE_SAVED_PROFILE_REASK, PARSE_FAVORITE_MOVIE
     }
 
 }

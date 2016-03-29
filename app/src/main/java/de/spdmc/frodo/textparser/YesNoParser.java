@@ -19,7 +19,7 @@ public class YesNoParser extends Parser {
         in = normalize(in);
         String[] inArr = in.split(" ");
         if(inArr[0].equals("ja") || inArr[0].equals("jo") || in.contains("gern") || in.contains("natürlich")
-                || inArr[0].equals("jap") || inArr[0].equals("joa")){
+                || inArr[0].equals("jap") || inArr[0].equals("joa") || in.contains("klar")){
             if(ic.getDialogState() == Enumerations.DialogState.FAVORITE_MOVIES_ASK_CONFIRM){
                 ic.setDialogState(Enumerations.DialogState.FAVORITE_MOVIES_ASK_MORE);
             } else if(ic.getDialogState() == Enumerations.DialogState.FAVORITE_TVSHOW_ASK_CONFIRM){

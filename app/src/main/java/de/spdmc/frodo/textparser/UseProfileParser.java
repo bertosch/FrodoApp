@@ -18,7 +18,7 @@ public class UseProfileParser extends Parser {
         in = normalize(in);
         String[] inArr = in.split(" ");
         if(inArr[0].equals("ja") || inArr[0].equals("jo") || in.contains("gern") || in.contains("natürlich")
-                || inArr[0].equals("jap") || inArr[0].equals("joa")){
+                || inArr[0].equals("jap") || inArr[0].equals("joa") || in.contains("klar")){
             if(p.getFavorite_type() != null) {
                 if (p.getFavorite_type().equals("serie")) {
                     ic.setDialogState(Enumerations.DialogState.FAVORITE_TVSHOW_REASK);
@@ -30,7 +30,7 @@ public class UseProfileParser extends Parser {
         }
         else if(in.contains("nein") || inArr[0].equals("nö") || inArr[0].equals("nä") || inArr[0].equals("ne")
                 || in.startsWith("nee") || in.contains("nöö") || in.contains("nää")){
-            ic.setDialogState(Enumerations.DialogState.PARSE_NAME);
+            ic.setDialogState(Enumerations.DialogState.NAME_REASK);
             Bot.setProfile(new Profile());
             Bot.resetSavedReply();
         }
