@@ -216,6 +216,11 @@ public class Bot {
                 case PARSE_USE_SAVED_PROFILE:
                     ic = useProfileParser.parse(s);
                     currentState = ic.getDialogState();
+                    if(currentState == null) currentState = Enumerations.DialogState.USE_SAVE_SAVED_PROFILE_REASK;
+                    break;
+                case USE_SAVE_SAVED_PROFILE_REASK:
+                    reply = "Das habe ich leider nicht verstanden. Möchtest du das vorhandene Profil verwenden?";
+                    currentState = Enumerations.DialogState.PARSE_USE_SAVED_PROFILE;
                     break;
                 case GREETING_REPLY:
                     reply = speakRandomlyAppend(greetingsParser.getPattern(), ", wie ist dein Name?");
@@ -597,7 +602,7 @@ public class Bot {
                             reply += con.getInfo() + ".";
                         } catch (Exception e) {
                             e.printStackTrace();
-                            reply = "Oops, da gab es wohl gerade ein Problem...";
+                            reply = "Es konnte kein passendes Resultat gefunden werden.";
                         }
                         currentState = Enumerations.DialogState.PARSE_RECOMMENDATION_REACTION;
                     }
@@ -646,9 +651,8 @@ public class Bot {
                     break;
             }
         }
-        String[] splitReply = reply.split("[.!]");
-        savedReply = splitReply[splitReply.length-1];
-        if (savedReply.charAt(0) != ' ') savedReply = " " + savedReply;
+        savedReply = reply;
+        if (savedReply.charAt(0) != ' ') savedReply = "\n\n" + savedReply;
         return reply;
     }
 
