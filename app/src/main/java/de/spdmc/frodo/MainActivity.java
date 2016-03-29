@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         Bot.setContext(this.getApplicationContext());
-        Bot.readSavedProfile();
+        boolean profileExists = Bot.readSavedProfile();
         Bot.initializeCon();
         Genres.fillGenres();
 
@@ -93,8 +93,15 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        chatArrayAdapter.add(new ChatMessage(true,
-                "Hallo, mein Name ist Frodo, dein Film- und Serienberater. Wie ist dein Name?"));
+        if(!profileExists) {
+            chatArrayAdapter.add(new ChatMessage(true,
+                    "Hallo, mein Name ist Frodo, dein Film- und Serienberater. Wie ist dein Name?"));
+        }
+        else {
+            chatArrayAdapter.add(new ChatMessage(true,
+                    "Hallo, mein Name ist Frodo, dein Film- und Serienberater.\nAuf diesem Gerät ist bereits ein Profil gespeichert, soll ich dieses verwenden?"));
+            Bot.setCurrentState(Enumerations.DialogState.PARSE_USE_SAVED_PROFILE);
+        }
     }
 
     //KLasse ChatMessage aufrufen und Nachricht versenden

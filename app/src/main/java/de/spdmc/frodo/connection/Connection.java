@@ -150,10 +150,14 @@ public class Connection {
         if (favorite_type.equals("serie")){
             while(ratedResultTV.contains(pickedTV)) {
                 ratedResultTV.remove(pickedTV);
+
             }
             if (ratedResultTV.isEmpty()){
                 page++;
                 discover();
+            }
+            else {
+                pickedTV = getRandomTV();
             }
         }else{
             while(ratedResultMovie.contains(pickedMovie)) {
@@ -162,6 +166,9 @@ public class Connection {
             if (ratedResultMovie.isEmpty()){
                 page++;
                 discover();
+            }
+            else{
+                pickedMovie = getRandomMovie();
             }
         }
     }

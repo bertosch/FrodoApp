@@ -30,7 +30,10 @@ public class MoviesParser extends Parser {
             }
         }
         if(inArr[0].contains("nein") || inArr[0].equals("nö") || inArr[0].equals("nä")
-                || inArr[0].equals("ne") || inArr[0].startsWith("nee") || inArr[0].contains("nöö") || inArr[0].contains("nää") || in.contains("keine weiteren") || in.contains("sonst keine")){
+                || inArr[0].equals("ne") || inArr[0].startsWith("nee") || inArr[0].contains("nöö")
+                || inArr[0].contains("nää") || in.contains("keine weiteren")
+                || in.contains("sonst keine") || in.contains("kein weiterer")
+                || in.contains("habe keinen")){
             ic.setDialogState(Enumerations.DialogState.FAVORITE_MOVIES_DECLINED);
             return ic;
         }
